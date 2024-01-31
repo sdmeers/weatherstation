@@ -1,0 +1,213 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div><h5 class="w3-container"></h5></div>
+
+<div>
+  <h5 class="w3-container"><b>Current Readings</b></h5>
+  <p class="w3-container">Time of latest reading: {{ time_of_latest_reading }} </p>
+</div>
+
+<div class="w3-row-padding w3-margin-bottom">
+  <div class="w3-third">
+    <div class="w3-container w3-red w3-padding-16">
+      <div class="w3-left"><i class="fa-solid fa-temperature-high w3-xxxlarge"" style="color: #ffffff;"></i></div>
+      <div class="w3-right">
+        <h3>{{ latest_temperature }}</h3>
+      </div>
+      <div class="w3-clear"></div>
+      <h4>Temperature (&deg;C)</h4>
+    </div>
+  </div>
+  <div class="w3-third">
+    <div class="w3-container w3-teal w3-padding-16">
+      <div class="w3-left"><i class="fa-solid fa-percent w3-xxxlarge" style="color: #ffffff;""></i></div>
+      <div class="w3-right">
+        <h3>{{ latest_humidity }}</h3>
+      </div>
+      <div class="w3-clear"></div>
+      <h4>Humidity (%)</h4>
+    </div>
+  </div>
+  <div class="w3-third">
+  <div class="w3-container w3-purple w3-padding-16">
+    <div class="w3-left"><i class="fa-solid fa-cloud-rain fa  w3-xxxlarge"" style="color: #ffffff;"></i></div>
+    <div class="w3-right">
+      <h3>{{ latest_rain_rate }}</h3>
+    </div>
+    <div class="w3-clear"></div>
+    <h4>Rain Rate (mm/hr)</h4>
+    </div>
+  </div>
+</div>
+
+<!--<div class="w3-row-padding w3-margin-bottom"></div>-->
+
+<div class="w3-row-padding w3-margin-bottom">
+  <div class="w3-quarter">
+    <div class="w3-container w3-pale-yellow w3-padding-16">
+      <div class="w3-left"><i class="fa-solid fa-gauge-high w3-xxxlarge" style="color: #000000;"></i></div>
+      <div class="w3-right">
+        <h3>{{ latest_pressure }}</h3>
+      </div>
+      <div class="w3-clear"></div>
+      <h4>Pressure (hPa)</h4>
+    </div>
+  </div>
+  <div class="w3-quarter">
+    <div class="w3-container w3-blue w3-padding-16">
+      <div class="w3-left"><i class="fa-solid fa-wind w3-xxxlarge" style="color: #ffffff;"></i></div>
+      <div class="w3-right">
+        <h3>{{ latest_wind_speed_mph }}</h3>
+      </div>
+      <div class="w3-clear"></div>
+      <h4>Wind Speed (mph)</h4>
+    </div>
+  </div>
+  <div class="w3-quarter">
+    <div class="w3-container w3-indigo w3-padding-16">
+      <div class="w3-left"><i class="fa-regular fa-compass w3-xxxlarge" style="color: #ffffff;"></i></div>
+      <div class="w3-right">
+        <h3>{{ latest_wind_direction_converted }}</h3>
+      </div>
+      <div class="w3-clear"></div>
+      <h4>Wind Direction</h4>
+    </div>
+  </div>
+  <div class="w3-quarter">
+    <div class="w3-container w3-orange w3-text-white w3-padding-16">
+      <div class="w3-left"><i class="fa-regular fa-sun w3-xxxlarge" style="color: #ffffff;"></i></div>
+      <div class="w3-right">
+        <h3>{{ latest_luminance }}</h3>
+      </div>
+      <div class="w3-clear"></div>
+      <h4>Luminance (lux)</h4>
+    </div>
+  </div>
+</div>
+
+<div>
+  <h5 class="w3-container"><b>Today's Summary</b></h5>
+</div>
+
+<div class="w3-row-padding w3-margin-bottom">
+  <div class="w3-third">
+    <div class="w3-container w3-pale-red w3-padding-16">
+      <div class="w3-left"><i class="fa-solid fa-temperature-arrow-up w3-xxxlarge" style="color: #000000;"></i></div>
+      <div class="w3-right">
+        <h3>{{ todays_max_temperature }}</h3>
+      </div>
+      <div class="w3-clear"></div>
+      <h4>Maximum daily temperature (&deg;C)</h4>
+    </div>
+  </div>
+  <div class="w3-third">
+    <div class="w3-container w3-pale-green w3-padding-16">
+      <div class="w3-left"><i class="fa-solid fa-temperature-arrow-down fa w3-xxxlarge" style="color: #000000;"></i></div>
+      <div class="w3-right">
+        <h3>{{ todays_min_temperature }}</h3>
+      </div>
+      <div class="w3-clear"></div>
+      <h4>Minimum daily temperature (&deg;C)</h4>
+    </div>
+  </div>
+  <div class="w3-third">
+    <div class="w3-container w3-pale-blue w3-padding-16">
+      <div class="w3-left"><i class="fa-solid fa-vial w3-xxxlarge" style="color: #000000;""></i></div> <!-- was test tube icon: "" -->
+      <div class="w3-right">
+        <h3>{{ todays_total_rain }}</h3>
+      </div>
+      <div class="w3-clear"></div>
+      <h4>Total daily rainfall (mm)</h4>
+    </div>
+  </div>
+</div>
+
+<div class="w3-image width:100%">
+  <h5 class="w3-container"><b>Last 24 hours rainfall</b></h5>
+  <img src="/plot_24h_rainfall.png" alt="Last 24 hours of rain" style="width:100%; object-fit: contain">
+</div>
+
+<div> <!--class="w3-container w3-topbar w3-border-grey"-->
+  <h5 class="w3-container"><b>Last 7 days data</b></h5>
+</div>
+
+<div class="w3-image w3-quarter width:100%">
+  <img src="/plot_temperature.png" alt="Last 7 days temperature" style="width:100%; object-fit: contain">
+</div>
+
+<div class="w3-image w3-quarter width:100%">
+  <img src="/plot_humidity.png" alt="Last 7 days humidity" style="width:100%; object-fit: contain">
+</div>
+
+<div class="w3-image w3-quarter width:100%">
+  <img src="/plot_pressure.png" alt="Last 7 days pressure" style="width:100%; object-fit: contain">
+</div>
+
+<div class="w3-image w3-quarter width:100%">
+  <img src="/plot_rain.png" alt="Last 7 days of rain" style="width:100%; object-fit: contain">
+</div>
+
+<!--
+<div class="w3-image width:100%">
+  <h5 class="w3-container"><b>Today's rainfall</b></h5>
+  <img src="/plot_daily_rainfall.png" alt="my plot" style="width:100%; object-fit: contain">
+</div>
+-->
+
+<div class="w3-image width:100%">
+  <h5 class="w3-container"><b>Annual Summary</b></h5>
+  <img src="/plot_annual_max_temperatures.png" alt="my plot" style="width:100%; w3-center object-fit: contain">
+</div>
+
+<div class="w3-center custom-center">
+  <div class="table-responsive w3-center">
+    <h5 class="w3-table w3-striped w3-bordered"></h5> <!-- w3-container w3-responsive w3-table"></h5>-->
+    {{ table|safe }}
+  </div>
+</div>
+
+<!-- 
+<div class="w3-image w3-half width:100%">
+  <h5 class="w3-container"><b>Annual minimum daily temperatures</b></h5>
+  <img src="/plot_annual_min_temperatures.png" alt="my plot" style="width:100%; w3-center object-fit: contain">
+</div>
+-->
+
+<div class="w3-container"></div>
+    <div class="w3-container w3-dark-grey w3-padding-32">
+      <div class="w3-row">
+        <div class="w3-container w3-quarter">
+          <h5 class="w3-bottombar w3-border-red clear:both;">Yesterday</h5>
+          <p class="w3-left-align">Maximum temperature: <span style="float:right;">{{yesterdays_max_temperature}} &deg;C</span></p>
+          <p class="w3-left-align">Minimum temperature: <span style="float:right;">{{yesterdays_min_temperature}} &deg;C</span></p>
+          <p class="w3-left-align">Total rainfall: <span style="float:right;">{{yesterdays_total_rain}} mm</span></p>
+          <p class="w3-left-align">Maximum rain rate: <span style="float:right;">{{yesterdays_max_rain_rate}} mm/hr</span></p>
+          <p class="w3-left-align">Peak wind speed: <span style="float:right;">{{yesterdays_max_wind_speed}} mph</span></p> 
+        </div>
+        <div class="w3-container w3-quarter">
+          <h5 class="w3-bottombar w3-border-orange clear:both;">This Week</h5>
+          <p class="w3-left-align">Maximum temperature: <span style="float:right;">{{weekly_max_temperature}} &deg;C</span></p>
+          <p class="w3-left-align">Minimum temperature: <span style="float:right;">{{weekly_min_temperature}} &deg;C</span></p>
+          <p class="w3-left-align">Total rainfall: <span style="float:right;">{{weekly_total_rain}} mm</span></p>
+          <p class="w3-left-align">Maximum rain rate: <span style="float:right;">{{weekly_max_rain_rate}} mm/hr</span></p>
+          <p class="w3-left-align">Peak wind speed: <span style="float:right;">{{weekly_max_wind_speed}} mph</span></p> 
+        </div>
+        <div class="w3-container w3-quarter">
+          <h5 class="w3-bottombar w3-border-green">This Month</h5>
+          <p class="w3-left-align">Maximum temperature: <span style="float:right;">{{monthly_max_temperature}} &deg;C</span></p>
+          <p class="w3-left-align">Minimum temperature: <span style="float:right;">{{monthly_min_temperature}} &deg;C</span></p>
+          <p class="w3-left-align">Total rainfall: <span style="float:right;">{{monthly_total_rain}} mm</span></p>
+          <p class="w3-left-align">Maximum rain rate: <span style="float:right;">{{monthly_max_rain_rate}} mm/hr</span></p>
+          <p class="w3-left-align">Peak wind speed: <span style="float:right;">{{monthly_max_wind_speed}} mph</span></p>        </div>
+        <div class="w3-container w3-quarter">
+          <h5 class="w3-bottombar w3-border-blue">This Year</h5>
+          <p class="w3-left-align">Maximum temperature: <span style="float:right;">{{annual_max_temperature}} &deg;C</span></p>
+          <p class="w3-left-align">Minimum temperature: <span style="float:right;">{{annual_min_temperature}} &deg;C</span></p>
+          <p class="w3-left-align">Total rainfall: <span style="float:right;">{{annual_total_rain}} mm</span></p>
+          <p class="w3-left-align">Maximum rain rate: <span style="float:right;">{{annual_max_rain_rate}} mm/hr</span></p>
+          <p class="w3-left-align">Peak wind speed: <span style="float:right;">{{annual_max_wind_speed}} mph</span></p>          </div>
+      </div>
+    </div>
+
+{% endblock content %}
