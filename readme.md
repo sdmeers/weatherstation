@@ -124,7 +124,7 @@ USE weather;
 
 SELECT *
 FROM data
-INTO OUTFILE '/tmp/20240109-weather_data.csv'
+INTO OUTFILE '/tmp/weather_data_export.csv'
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
 LINES TERMINATED BY '\n';
