@@ -94,14 +94,14 @@ This will run the webserver as a background service on boot enabling it to accep
 
 The webpages to display the weather data can be accessed via `localhost:5000` or '<IP_address>:5000'.
 
-Use commands 
-* check the status of your service:
+## Useful  commands 
+Check the status of your service:
 
 ```
 sudo systemctl status weather_app.service
 ```
 
-* Stop, restart & disable your service:
+Stop, restart & disable your service:
 
 ```
 sudo systemctl stop weather_app.service
@@ -109,22 +109,17 @@ sudo systemctl restart weather_app.service
 sudo systemctl disable weather_app.service
 ```
 
-* View the most recent 50 log entries via syslog 
+View the most recent 50 log entries via syslog 
 
 ```
 journalctl -n 50 -u weather_app.service
 ```
-* MySQL command to exporting SQL Data to csv
+MySQL command to exporting SQL Data to csv
 
-First
 ```
 sudo mysql -u root -p
 USE weather;
-```
 
-Then
-
-```
 SELECT *
 FROM data
 INTO OUTFILE '/tmp/20240109-weather_data.csv'
