@@ -92,7 +92,9 @@ This will run the webserver as a background service on boot enabling it to accep
 
 ### Step 6: Use the webserver to view the data  
 
-The webpages to display the weather data can be accessed via `localhost:5000` or '<IP_address>:5000'.
+The webpages to display the weather data can be accessed via `localhost:5000` or '<IP_address>:5000'. You should something similar to the screenshot below.
+
+![Screenshot of the full web interface show current & historic weather data](https://github.com/sdmeers/weatherstation/blob/main/screenshots/weatherstation-full.jpg)
 
 ## Useful  commands 
 Check the status of your service:
