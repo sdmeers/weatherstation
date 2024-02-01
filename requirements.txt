@@ -1,0 +1,7 @@
+Flask>=2.3.2
+mysql-connector-python==8.0.33
+python-dateutil==2.8.2
+numpy==1.24.3
+pandas==2.0.1
+matplotlib==3.7.1
+calplot>=0.1.7.5
