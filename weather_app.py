@@ -189,8 +189,8 @@ def plot_data(xs, ys, title, ylabel):
     axis.xaxis.set_major_locator(DayLocator())
     axis.grid(axis='x', linestyle='--', alpha=0.7, which='major')
     axis.set_ylabel(ylabel)
-    fig.set_facecolor('#f1f1f1')
-    axis.set_facecolor('#f1f1f1')
+    fig.set_facecolor('#ffffff')
+    axis.set_facecolor('#ffffff')
     axis.set_title(title)
     return fig
 
@@ -203,8 +203,8 @@ def plot_bar(xs, ys, title, ylabel):
     axis.set_ylabel(ylabel)
     y_min, y_max = axis.get_ylim()
     axis.set_ylim(0, max(1, y_max))
-    fig.set_facecolor('#f1f1f1')
-    axis.set_facecolor('#f1f1f1')
+    fig.set_facecolor('#ffffff')
+    axis.set_facecolor('#ffffff')
     axis.set_title(title)
     return fig
 
@@ -221,8 +221,8 @@ def plot_daily_bar(xs, ys, title, ylabel):
     axis.set_ylabel(ylabel)
     y_min, y_max = axis.get_ylim()
     axis.set_ylim(0, max(1, y_max))  # Setting the max y-axis value to at least 1.0 mm
-    fig.set_facecolor('#f1f1f1')
-    axis.set_facecolor('#f1f1f1')
+    fig.set_facecolor('#ffffff')
+    axis.set_facecolor('#ffffff')
     axis.set_title(title)
     return fig
 
@@ -251,17 +251,17 @@ def plot_24h_bar_greyed(xs, ys, title, ylabel):
     y_pos = 0.95 * axis.get_ylim()[1]  # 95% height of y-axis to place the text near the top
     axis.text(0, y_pos, 'Yesterday', ha='left', va='top', color='black')
     axis.text(23, y_pos, 'Today', ha='right', va='top')
-    fig.set_facecolor('#f1f1f1')
-    axis.set_facecolor('#f1f1f1')
+    fig.set_facecolor('#ffffff')
+    axis.set_facecolor('#ffffff')
     axis.set_title(title)
     return fig
 
 # may need to change to calplot.yearplot to just show one year 
 def plot_annual(data, how, cmap):
-    fig, axis = calplot.calplot(data = data['temperature'], how = how,  figsize=(13,2.5) , cmap = cmap, linecolor='#f1f1f1', yearlabels=True, colorbar=False, textformat='{:.0f}')#,suptitle = title)
-    fig.set_facecolor('#f1f1f1')
+    fig, axis = calplot.calplot(data = data['temperature'], how = how,  figsize=(13,2.5) , cmap = cmap, linecolor='#ffffff', yearlabels=True, colorbar=False, textformat='{:.0f}')#,suptitle = title)
+    fig.set_facecolor('#ffffff')
     for ax in axis.flatten():
-        ax.set_facecolor('#f1f1f1')
+        ax.set_facecolor('#ffffff')
     plt.rcParams['font.family'] = 'DejaVu Sans'
     return fig
 
