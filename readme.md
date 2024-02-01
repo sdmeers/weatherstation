@@ -1,16 +1,16 @@
 # Overview
 This respository contains the files necessary to run a webserver that runs with a [Enviro Weather](https://github.com/pimoroni/enviro). The webserver is designed to run as a service on a Raspberry Pi and provides the HTTP Endpoints to accept the readings from the Enviro Weather and store them in a MySQL database. It also serves responsive webpages to view the recorded data as shown in the following screenshots 
-![Screenshot of the web interface displaying the weather data including current temperature, humidity, pressure and more.](https://github.com/sdmeers/weatherstation/blob/main/weatherstation-screenshot.jpg)
+![Screenshot of the web interface displaying the weather data including current temperature, humidity, pressure and more.](https://github.com/sdmeers/weatherstation/blob/main/screenshots/weatherstation-screenshot.jpg)
 
 As well as the most recently recorded data the webpages plot historic weather data for both the past 24 hours rainfall and also the last 7 days of temperature, humidity, pressure and daily rainfall.
-![Screenshot of the web interface plotting historiic  weather data including current temperature, humidity, pressure and more.](https://github.com/sdmeers/weatherstation/blob/main/weatherstation-graphs.jpg)
+![Screenshot of the web interface plotting historiic  weather data including current temperature, humidity, pressure and more.](https://github.com/sdmeers/weatherstation/blob/main/screenshots/weatherstation-graphs.jpg)
 
 
 ## Installation
 
 The webserver is designed to run on Linux and has been developed using Python 3.11.3. 
 
-### Step 0: Config the Enviro Weather and specify the IP address for the Custom HTTP Endpoint
+### Step 0: Config the Enviro Weather and specify the IP address for the HTTP Endpoint
 Setup the Enviro Weather as described [here](https://github.com/pimoroni/enviro/blob/main/documentation/getting-started.md) adding the IP address of the Raspberry Pi as the Custom HTTP Endpoint. Taking readings every 15 minutes is recommended.
 
 ### Step 1: Clone this repository to ~/weather & install the necessary Python libraries 
@@ -18,11 +18,12 @@ These are described in the requirements.txt file, simply run
 
 ```.bash
 git clone https://github.com/sdmeers/weatherstation
+cd weatherstation
 pip install -r requirements.txt
 ```
 
 ### Step 2: Install MySQL on the server
-The weather records are stored in a MySQL database which is recommended to run on a remote Raspberry Pi or similar. Follow the installation instructions [here].(https://pimylifeup.com/raspberry-pi-mysql/)
+The weather records are stored in a MySQL database which is recommended to run on a remote Raspberry Pi or similar. Follow the installation instructions [here](https://pimylifeup.com/raspberry-pi-mysql/).
 
 ### Step 3: Create a SQL table to store the necessary data
 
@@ -56,7 +57,7 @@ CREATE TABLE IF NOT EXISTS `data` (
 ```
 
 ### Step 4: Create the necessary config files 
-Add your MySQL username (root) and <password> to the two config files using the templates above [sql_config.py](https://github.com/sdmeers/weatherstation/blob/main/sql_config.py) and [config.php](https://github.com/sdmeers/weatherstation/blob/main/config.php).
+Add your MySQL username (root) and `<password>` to the two config files using the templates above [sql_config.py](https://github.com/sdmeers/weatherstation/blob/main/sql_config.py) and [config.php](https://github.com/sdmeers/weatherstation/blob/main/config.php).
 
 ### Step 5: Run weather_app.py as a background service in Linux
 
@@ -65,7 +66,7 @@ Add your MySQL username (root) and <password> to the two config files using the 
 ```
 ExecStart=/usr/bin/python3 <path_to_weather_app.py>
 e.g.
-ExecStart=/usr/bin/python3 /home/pi/weather/weather_app.py
+ExecStart=/usr/bin/python3 /home/pi/weatherstation/weather_app.py
 ```
 
 * Save this file to `/etc/systemd/system/weather_app.service`
