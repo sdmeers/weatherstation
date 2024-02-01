@@ -10,8 +10,7 @@ As well as the most recently recorded data the webpages plot historic weather da
 
 The webserver is designed to run on Linux and has been developed using Python 3.11.3. Firstly install the necessary python libraries using the requirements.txt file.
 
-```
-.bash
+```.bash
 pip install -r requirements.txt
 ```
 
