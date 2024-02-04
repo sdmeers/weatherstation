@@ -9,7 +9,7 @@ As well as the most recently recorded data the webpages plot historic weather da
 
 ## Installation
 
-The webserver is designed to run on a Raspberry Pi and has been developed using Python 3.11.3. This is a home project for fun - it works reliably but may need some modification to work on your system. There are probably many ways to improve it - grateful for any suggestions!
+The webserver is designed to run on a Raspberry Pi and has been developed using Python 3.11.3. This is a home project for fun, it works reliably but may need some modification to work on your system. There are probably many ways to improve it - grateful for any suggestions!
 
 ### Step 0: Config the Enviro Weather and specify the IP address for the HTTP Endpoint
 Setup the Enviro Weather as described [here](https://github.com/pimoroni/enviro/blob/main/documentation/getting-started.md) adding the IP address of the Raspberry Pi as the custom HTTP endpoint. Taking readings every 15 minutes is recommended.
@@ -24,6 +24,8 @@ pip install -r requirements.txt
 ```
 
 Then copy `index.php` into `/var/www/html/`. 
+
+
 
 ### Step 2: Install MySQL on the server
 The weather records are stored in a MySQL database which is recommended to run on a remote Raspberry Pi or similar. Follow the installation instructions [here](https://pimylifeup.com/raspberry-pi-mysql/).
@@ -70,7 +72,7 @@ EXIT;
 ```
 
 ### Step 4: Create the necessary config files 
-Add your MySQL `<username>` and `<password>` to the two config files using the templates above [sql_config.py](https://github.com/sdmeers/weatherstation/blob/main/sql_config.py) and [config.php](https://github.com/sdmeers/weatherstation/blob/main/config.php). Also add the `<IP_address>` of the web server.
+Add your MySQL `<username>` and `<password>` to the two config files using the templates above [sql_config-template.py](https://github.com/sdmeers/weatherstation/blob/main/sql_config-template.py) and [config-template.php](https://github.com/sdmeers/weatherstation/blob/main/config-template.php). Rename both files remove the `-template` suffix and add the `<IP_address>` of the web server to `sql_config.py`.
 
 ### Step 5: Run weather_app.py as a background service in Linux
 
@@ -78,6 +80,7 @@ Add your MySQL `<username>` and `<password>` to the two config files using the t
 
 ```
 ExecStart=/usr/bin/python3 <path_to_weather_app.py>
+
 e.g.
 ExecStart=/usr/bin/python3 /home/pi/weatherstation/weather_app.py
 ```
@@ -151,7 +154,7 @@ A link is provided to `index.php` which displays the raw data from the MySQL dat
 The Enviro Weather requires a static IP for the web-server (this also makes it easier to access the web-pages). If running on a local network use IP Binding on the router to ensure the web-server is allocated a static IP.     
 
 ## Helper functions
-[weather_helper.py](https://github.com/sdmeers/weatherstation/blob/main/weather_helper.py) contains a number of helper Python functions. In particular the `get_data(**args)` function is included to simplify the extraction of weather records from the MySQL database, for example for analysis of the data in a Jupyter Notebook. A summary of the help page for the function is as follows:
+[weather_helper.py](https://github.com/sdmeers/weatherstation/blob/main/weather_helper.py) contains a number of helper Python functions. In particular the `get_data(**args)` function is included to simplify the extraction of weather records from the MySQL database as a Pandas DataFrame, for example for analysis of the data in a Jupyter Notebook. A summary of the help page for the function is as follows:
 
 ```
 get_data(*args):
