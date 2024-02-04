@@ -1,6 +1,6 @@
 <?php
 // config.php
-$username = '<MYSQLusername(root)>';
+$username = '<MYSQLusername>';
 $password = '<password>';
 $databasename = 'weather';
 ?>
