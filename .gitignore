@@ -1,3 +1,4 @@
 config.php
 sql_config.py
 update_pi
+__pycache__/
