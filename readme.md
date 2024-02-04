@@ -9,13 +9,13 @@ As well as the most recently recorded data the webpages plot historic weather da
 
 ## Installation
 
-The webserver is designed to run on a Raspberry Pi and has been developed using Python 3.11.3. 
+The webserver is designed to run on a Raspberry Pi and has been developed using Python 3.11.3. This is a home project for fun - it works reliably but may need some modification to work on your system. There are probably many ways to improve it - grateful for any suggestions!
 
 ### Step 0: Config the Enviro Weather and specify the IP address for the HTTP Endpoint
-Setup the Enviro Weather as described [here](https://github.com/pimoroni/enviro/blob/main/documentation/getting-started.md) adding the IP address of the Raspberry Pi as the Custom HTTP Endpoint. Taking readings every 15 minutes is recommended.
+Setup the Enviro Weather as described [here](https://github.com/pimoroni/enviro/blob/main/documentation/getting-started.md) adding the IP address of the Raspberry Pi as the custom HTTP endpoint. Taking readings every 15 minutes is recommended.
 
 ### Step 1: Clone this repository to ~/weather & install the necessary Python libraries 
-These are described in the `requirements.txt` file, simply run
+These are described in the `requirements.txt` file. Simply run
 
 ```.bash
 git clone https://github.com/sdmeers/weatherstation
@@ -23,7 +23,7 @@ cd weatherstation
 pip install -r requirements.txt
 ```
 
-Final copy `index.php` into `/var/www/html/`. 
+Then copy `index.php` into `/var/www/html/`. 
 
 ### Step 2: Install MySQL on the server
 The weather records are stored in a MySQL database which is recommended to run on a remote Raspberry Pi or similar. Follow the installation instructions [here](https://pimylifeup.com/raspberry-pi-mysql/).
@@ -57,6 +57,16 @@ CREATE TABLE IF NOT EXISTS `data` (
   month int(2) NOT NULL,
   year int(4) NOT NULL
 );
+```
+
+Depending on your user permissions it may be necessary to update privileges using
+
+```
+CREATE USER 'myuser'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON weather.* TO 'myuser'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+
 ```
 
 ### Step 4: Create the necessary config files 
@@ -95,7 +105,7 @@ This will run the webserver as a background service on boot enabling it to accep
 
 ### Step 6: Use the webserver to view the data  
 
-The webpages to display the weather data can be accessed via `localhost:5000` or '<IP_address>:5000'. You should something similar to the screenshot below.
+The webpages to display the weather data can be accessed via `localhost:5000` or `<IP_address>:5000`. You should something similar to the screenshot below.
 
 ![Screenshot of the full web interface show current & historic weather data](https://github.com/sdmeers/weatherstation/blob/main/screenshots/weatherstation-full.jpg)
 
