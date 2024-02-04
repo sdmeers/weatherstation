@@ -1,10 +1,11 @@
 # Overview
-This respository contains the files necessary to run a webserver that runs with a [Enviro Weather](https://github.com/pimoroni/enviro). The webserver is designed to run as a service on a Raspberry Pi and provides the HTTP Endpoints to accept the readings from the Enviro Weather and store them in a MySQL database. It also serves responsive webpages to view the recorded data as shown in the following screenshots 
+This respository contains the files necessary to run a webserver that runs with a [Enviro Weather](https://github.com/pimoroni/enviro). The webserver is designed to run as a service on a Raspberry Pi and provides the HTTP Endpoints to accept the readings from the Enviro Weather and store them in a MySQL database. It also serves responsive webpages to view the recorded data as shown in the following screenshots.
+
 ![Screenshot of the web interface displaying the weather data including current temperature, humidity, pressure and more.](https://github.com/sdmeers/weatherstation/blob/main/screenshots/weatherstation-screenshot.jpg)
 
 As well as the most recently recorded data the webpages plot historic weather data for both the past 24 hours rainfall and also the last 7 days of temperature, humidity, pressure and daily rainfall.
-![Screenshot of the web interface plotting historiic  weather data including current temperature, humidity, pressure and more.](https://github.com/sdmeers/weatherstation/blob/main/screenshots/weatherstation-graphs.jpg)
 
+![Screenshot of the web interface plotting historiic  weather data including current temperature, humidity, pressure and more.](https://github.com/sdmeers/weatherstation/blob/main/screenshots/weatherstation-graphs.jpg)
 
 ## Installation
 
@@ -14,7 +15,7 @@ The webserver is designed to run on a Raspberry Pi and has been developed using 
 Setup the Enviro Weather as described [here](https://github.com/pimoroni/enviro/blob/main/documentation/getting-started.md) adding the IP address of the Raspberry Pi as the Custom HTTP Endpoint. Taking readings every 15 minutes is recommended.
 
 ### Step 1: Clone this repository to ~/weather & install the necessary Python libraries 
-These are described in the requirements.txt file, simply run
+These are described in the `requirements.txt` file, simply run
 
 ```.bash
 git clone https://github.com/sdmeers/weatherstation
@@ -22,7 +23,7 @@ cd weatherstation
 pip install -r requirements.txt
 ```
 
-Final copy <index.php> into </var/www/html/>. 
+Final copy `index.php` into `/var/www/html/`. 
 
 ### Step 2: Install MySQL on the server
 The weather records are stored in a MySQL database which is recommended to run on a remote Raspberry Pi or similar. Follow the installation instructions [here](https://pimylifeup.com/raspberry-pi-mysql/).
@@ -59,11 +60,11 @@ CREATE TABLE IF NOT EXISTS `data` (
 ```
 
 ### Step 4: Create the necessary config files 
-Add your MySQL username (root) and `<password>` to the two config files using the templates above [sql_config.py](https://github.com/sdmeers/weatherstation/blob/main/sql_config.py) and [config.php](https://github.com/sdmeers/weatherstation/blob/main/config.php).
+Add your MySQL `<username>` and `<password>` to the two config files using the templates above [sql_config.py](https://github.com/sdmeers/weatherstation/blob/main/sql_config.py) and [config.php](https://github.com/sdmeers/weatherstation/blob/main/config.php). Also add the `<IP_address>` of the web server.
 
 ### Step 5: Run weather_app.py as a background service in Linux
 
-* Edit [weather_app.service](https://github.com/sdmeers/weatherstation/blob/main/weather_app.service) with your path to weather_app.py. The line you will need to edit is
+* Edit [weather_app.service](https://github.com/sdmeers/weatherstation/blob/main/weather_app.service) with your path to `weather_app.py`. The line you will need to edit is as follows.
 
 ```
 ExecStart=/usr/bin/python3 <path_to_weather_app.py>
@@ -135,12 +136,12 @@ LINES TERMINATED BY '\n';
 ## Other notes
 A script to convert the weather direction readings from the Enviro Weather (in degrees) to compass cardinal points (N, NE etc...) is included in the [weather_help.py](https://github.com/sdmeers/weatherstation/blob/main/weather_helper.py). Use a compass to determine how to modify the values in the helper file depending on how your weatherstation is oriented.
 
-A link is provided to index.php which displays the raw data from the MySQL database. Each page shows 96 records which corrsponds to 24 hours of data sampled every 15 minutes.
+A link is provided to `index.php` which displays the raw data from the MySQL database. Each page shows 96 records which corresponds to 24 hours of data sampled every 15 minutes.
 
-The Enviro Weather requires a static IP for the web-server (this also makes it easier to access the web-pages). If running on a local network use IP Binding on the router to ensure the Raspberry Pi is allocated a static IP.     
+The Enviro Weather requires a static IP for the web-server (this also makes it easier to access the web-pages). If running on a local network use IP Binding on the router to ensure the web-server is allocated a static IP.     
 
 ## Helper functions
-[weather_helper.py](https://github.com/sdmeers/weatherstation/blob/main/weather_helper.py) contains a number of helper Python functions. In particular the <get_data(**args)> function is included to simplify the extraction of weather records from the MySQL database, for example for analysis of the data in a Jupyter Notebook. A summary of the help page for the function is as follows:
+[weather_helper.py](https://github.com/sdmeers/weatherstation/blob/main/weather_helper.py) contains a number of helper Python functions. In particular the `get_data(**args)` function is included to simplify the extraction of weather records from the MySQL database, for example for analysis of the data in a Jupyter Notebook. A summary of the help page for the function is as follows:
 
 ```
 get_data(*args):
