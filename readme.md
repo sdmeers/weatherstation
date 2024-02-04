@@ -151,7 +151,9 @@ A script to convert the weather direction readings from the Enviro Weather (in d
 
 A link is provided to `index.php` which displays the raw data from the MySQL database. Each page shows 96 records which corresponds to 24 hours of data sampled every 15 minutes.
 
-The Enviro Weather requires a static IP for the web-server (this also makes it easier to access the web-pages). If running on a local network use IP Binding on the router to ensure the web-server is allocated a static IP.     
+The Enviro Weather requires a static IP for the web-server (this also makes it easier to access the web-pages). If running on a local network use IP Binding on the router to ensure the web-server is allocated a static IP.  
+
+An `update_pi` script is included to make it easy to copy files from a development laptop across to the remote server (e.g. the Raspberry Pi) using scp. Simply run `./update_pi'. You'll need to have set up `ssh` to enable this.    
 
 ## Helper functions
 [weather_helper.py](https://github.com/sdmeers/weatherstation/blob/main/weather_helper.py) contains a number of helper Python functions. In particular the `get_data(**args)` function is included to simplify the extraction of weather records from the MySQL database as a Pandas DataFrame, for example for analysis of the data in a Jupyter Notebook. A summary of the help page for the function is as follows:
