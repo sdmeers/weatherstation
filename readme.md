@@ -8,7 +8,7 @@ As well as the most recently recorded data the webpages plot historic weather da
 
 ## Installation
 
-The webserver is designed to run on Linux and has been developed using Python 3.11.3. 
+The webserver is designed to run on a Raspberry Pi and has been developed using Python 3.11.3. 
 
 ### Step 0: Config the Enviro Weather and specify the IP address for the HTTP Endpoint
 Setup the Enviro Weather as described [here](https://github.com/pimoroni/enviro/blob/main/documentation/getting-started.md) adding the IP address of the Raspberry Pi as the Custom HTTP Endpoint. Taking readings every 15 minutes is recommended.
@@ -21,6 +21,8 @@ git clone https://github.com/sdmeers/weatherstation
 cd weatherstation
 pip install -r requirements.txt
 ```
+
+Final copy <index.php> into </var/www/html/>. 
 
 ### Step 2: Install MySQL on the server
 The weather records are stored in a MySQL database which is recommended to run on a remote Raspberry Pi or similar. Follow the installation instructions [here](https://pimylifeup.com/raspberry-pi-mysql/).
@@ -129,3 +131,39 @@ FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
 LINES TERMINATED BY '\n';
 ```
+
+## Other notes
+A script to convert the weather direction readings from the Enviro Weather (in degrees) to compass cardinal points (N, NE etc...) is included in the [weather_help.py](https://github.com/sdmeers/weatherstation/blob/main/weather_helper.py). Use a compass to determine how to modify the values in the helper file depending on how your weatherstation is oriented.
+
+A link is provided to index.php which displays the raw data from the MySQL database. Each page shows 96 records which corrsponds to 24 hours of data sampled every 15 minutes.
+
+The Enviro Weather requires a static IP for the web-server (this also makes it easier to access the web-pages). If running on a local network use IP Binding on the router to ensure the Raspberry Pi is allocated a static IP.     
+
+## Helper functions
+[weather_helper.py](https://github.com/sdmeers/weatherstation/blob/main/weather_helper.py) contains a number of helper Python functions. In particular the <get_data(**args)> function is included to simplify the extraction of weather records from the MySQL database, for example for analysis of the data in a Jupyter Notebook. A summary of the help page for the function is as follows:
+
+```
+get_data(*args):
+    Fetches data from a database based on the provided time range criteria.
+
+    Parameters:
+        *args : variable length argument list.
+            - Can be a single string that defines the time range:
+                - "latest": Returns the most recent record.
+                - "today": Returns data for the current day.
+                - "last24h": Returns data for the last 24 hours.
+                - "yesterday": Returns data for the previous day.
+                - "day=n": Returns data for the nth day of the current year (n: 1-366).
+                - "week": Returns data for the current week starting from Monday.
+                - "week=n": Returns data for the nth week of the year (n: 1-53).
+                - "last7days": Returns data for the last 7 days.
+                - "month": Returns data for the current month.
+                - "month=n": Returns data for the nth month (n: 1-12).
+                - "year": Returns data for the entire current year.
+                - "year=n": Returns data for the specified year.
+                - "all": Returns all the data in the database.
+            - Or two datetime objects defining the start and end dates for the data fetch.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing data fetched from the database.
+``` 

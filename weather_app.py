@@ -14,7 +14,7 @@ from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 from matplotlib.dates import DateFormatter, DayLocator
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from sql_config import config
+from sql_config import config, IP_addresses
 import calendar
 import json
 
@@ -91,7 +91,7 @@ def home():
                            annual_max_rain_rate = round(year_data['rain_rate'].max()*3600,1),
                            annual_max_wind_speed = round(year_data['wind_speed'].max()*2.23694,1),
                            table=df_html,
-                           index_URL = "http://192.168.50.51/index.php"
+			   index_URL = IP_addresses.get('index_URL', '192.168.0.1')
                            )
 
 @app.route('/weather-data', methods=['POST'])

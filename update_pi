@@ -1,7 +1,7 @@
 #!/bin/bash
-scp weather_app.py pi@192.168.50.51:~/weather
-scp weather_helper.py pi@192.168.50.51:~/weather
-scp templates/current.html  pi@192.168.50.51:~/weather/templates/
-scp templates/layout.html  pi@192.168.50.51:~/weather/templates/
-scp index.php pi@192.168.50.51:/var/www/html/
-scp config.php pi@192.168.50.51:~/weather
+scp weather_app.py pi@<Raspberry_Pi_IP_Address>:~/weatherstation
+scp weather_helper.py pi@<Raspberry_Pi_IP_Address>:~/weatherstation
+scp templates/current.html  pi@<Raspberry_Pi_IP_Address>:~/weatherstation/templates/
+scp templates/layout.html  pi@<Raspberry_Pi_IP_Address>:~/weatherstation/templates/
+scp index.php pi@<Raspberry_Pi_IP_Address>:/var/www/html/
+scp config.php pi@<Raspberry_Pi_IP_Address>:~/weatherstation
