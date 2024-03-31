@@ -91,7 +91,7 @@ def home():
                            annual_max_rain_rate = round(year_data['rain_rate'].max()*3600,1),
                            annual_max_wind_speed = round(year_data['wind_speed'].max()*2.23694,1),
                            table=df_html,
-			   index_URL = IP_addresses.get('index_URL', '192.168.0.1')
+			               index_URL = IP_addresses.get('index_URL', '192.168.0.1')
                            )
 
 @app.route('/weather-data', methods=['POST'])
@@ -230,8 +230,13 @@ def plot_24h_bar_greyed(xs, ys, title, ylabel):
     fig = Figure(figsize=(13, 2.5))
     axis = fig.add_subplot(1, 1, 1)
     current_hour = datetime.now().hour
-    ordered_hours = sorted(xs, key=lambda x: (x - 1 - current_hour) % 24)
-    ordered_ys = [ys[xs.index(x)] for x in ordered_hours]
+    # Ensure xs cover all 24 hours, even if some hours have no data
+    full_hours = range(24)
+    hour_data = {hour: 0 for hour in full_hours}  # Default to 0 for missing hours
+    for x, y in zip(xs, ys):
+        hour_data[x] = y
+    ordered_hours = sorted(full_hours, key=lambda x: (x - 1 - current_hour) % 24)
+    ordered_ys = [hour_data[x] for x in ordered_hours]
     bar_width = 0.5
     bars = axis.bar(range(24), ordered_ys, color='black', width=bar_width)
     axis.set_xlim(-0.5, 23.5)     # Set x-axis limits to ensure no white space on the left
