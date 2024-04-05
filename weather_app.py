@@ -91,7 +91,7 @@ def home():
                            annual_max_rain_rate = round(year_data['rain_rate'].max()*3600,1),
                            annual_max_wind_speed = round(year_data['wind_speed'].max()*2.23694,1),
                            table=df_html,
-			   index_URL = IP_addresses.get('index_URL', '192.168.0.1')
+			               index_URL = IP_addresses.get('index_URL', '192.168.0.1')
                            )
 
 @app.route('/weather-data', methods=['POST'])
@@ -230,25 +230,28 @@ def plot_24h_bar_greyed(xs, ys, title, ylabel):
     fig = Figure(figsize=(13, 2.5))
     axis = fig.add_subplot(1, 1, 1)
     current_hour = datetime.now().hour
-    ordered_hours = sorted(xs, key=lambda x: (x - 1 - current_hour) % 24)
-    ordered_ys = [ys[xs.index(x)] for x in ordered_hours]
+    # Ensure xs cover all 24 hours, even if some hours have no data
+    full_hours = range(24)
+    hour_data = {hour: 0 for hour in full_hours}  # Default to 0 for missing hours
+    for x, y in zip(xs, ys):
+        hour_data[x] = y
+    ordered_hours = sorted(full_hours, key=lambda x: (x - 1 - current_hour) % 24)
+    ordered_ys = [hour_data[x] for x in ordered_hours]
     bar_width = 0.5
     bars = axis.bar(range(24), ordered_ys, color='black', width=bar_width)
-    axis.set_xlim(-0.5, 23.5)     # Set x-axis limits to ensure no white space on the left
+    axis.set_xlim(-0.5, 23.5)
     ticks = [23, 17, 11, 5, 0]
-    #ticks = np.arange(0, 24, 6)
-    labels = [f"{ordered_hours[int(tick)]:02d}:00" for tick in ticks]
+    labels = [f"{h:02d}:00" for h in ordered_hours if h in ticks]
     axis.set_xticks(ticks)
     axis.set_xticklabels(labels)
-    midnight_pos = ordered_hours.index(0)     # Calculate the position for midnight
-    axis.axvspan(-0.5, midnight_pos, facecolor='lightgrey', alpha=0.5) # Shade from the left edge to midnight
+    midnight_pos = ordered_hours.index(0)
+    axis.axvspan(-0.5, midnight_pos, facecolor='lightgrey', alpha=0.5)
     axis.xaxis.set_minor_locator(MultipleLocator(1))
     axis.grid(axis='y', linestyle='--', alpha=0.7)
     axis.set_ylabel(ylabel)
     y_min, y_max = axis.get_ylim()
     axis.set_ylim(0, max(1, y_max))
-    # Positioning text labels in the top left and top right
-    y_pos = 0.95 * axis.get_ylim()[1]  # 95% height of y-axis to place the text near the top
+    y_pos = 0.95 * axis.get_ylim()[1]
     axis.text(0, y_pos, 'Yesterday', ha='left', va='top', color='black')
     axis.text(23, y_pos, 'Today', ha='right', va='top')
     fig.set_facecolor('#ffffff')
@@ -303,7 +306,7 @@ def plot_daily_rainfall_png():
 @app.route('/plot_24h_rainfall.png')
 def plot_24h_rainfall_png():
     last24h_data = get_data("last24h")  # Fetch data for the last 24 hours
-    rain_data = last24h_data.groupby([last24h_data['datetime'].dt.hour])['rain'].sum()   
+    rain_data = last24h_data.groupby([last24h_data['datetime'].dt.hour])['rain'].sum().reindex(range(24), fill_value=0)
     fig = plot_24h_bar_greyed(list(rain_data.index), list(rain_data.values), "Hourly Rainfall", "Rainfall (mm)")
     output = io.BytesIO()
     FigureCanvas(fig).print_png(output)
