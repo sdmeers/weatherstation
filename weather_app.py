@@ -228,15 +228,24 @@ def plot_daily_bar(xs, ys, title, ylabel):
 
 def plot_24h_bar_greyed(xs, ys, title, ylabel):
     fig = Figure(figsize=(13, 2.5))
+    
     axis = fig.add_subplot(1, 1, 1)
     current_hour = datetime.now().hour
-    ordered_hours = sorted(xs, key=lambda x: (x - 1 - current_hour) % 24)
-    ordered_ys = [ys[xs.index(x)] for x in ordered_hours]
+
+    # Ensure all hours are present in the data
+    full_xs = list(range(24))  # Hours from 0 to 23
+    full_ys = [0]*24  # Default to 0 for all hours
+    for x, y in zip(xs, ys):
+        full_ys[x] = y
+
+    # Order hours based on current hour
+    ordered_hours = sorted(full_xs, key=lambda x: (x - 1 - current_hour) % 24)
+    ordered_ys = [full_ys[x] for x in ordered_hours]
+
     bar_width = 0.5
-    bars = axis.bar(range(24), ordered_ys, color='black', width=bar_width)
+    axis.bar(range(24), ordered_ys, color='black', width=bar_width)
     axis.set_xlim(-0.5, 23.5)     # Set x-axis limits to ensure no white space on the left
     ticks = [23, 17, 11, 5, 0]
-    #ticks = np.arange(0, 24, 6)
     labels = [f"{ordered_hours[int(tick)]:02d}:00" for tick in ticks]
     axis.set_xticks(ticks)
     axis.set_xticklabels(labels)
@@ -245,12 +254,9 @@ def plot_24h_bar_greyed(xs, ys, title, ylabel):
     axis.xaxis.set_minor_locator(MultipleLocator(1))
     axis.grid(axis='y', linestyle='--', alpha=0.7)
     axis.set_ylabel(ylabel)
-    y_min, y_max = axis.get_ylim()
-    axis.set_ylim(0, max(1, y_max))
-    # Positioning text labels in the top left and top right
-    y_pos = 0.95 * axis.get_ylim()[1]  # 95% height of y-axis to place the text near the top
-    axis.text(0, y_pos, 'Yesterday', ha='left', va='top', color='black')
-    axis.text(23, y_pos, 'Today', ha='right', va='top')
+    axis.set_ylim(0, max(1, axis.get_ylim()[1]))
+    axis.text(0, axis.get_ylim()[1] * 0.95, 'Yesterday', ha='left', va='top')
+    axis.text(23, axis.get_ylim()[1] * 0.95, 'Today', ha='right', va='top')
     fig.set_facecolor('#ffffff')
     axis.set_facecolor('#ffffff')
     axis.set_title(title)
