@@ -228,7 +228,6 @@ def plot_daily_bar(xs, ys, title, ylabel):
 
 def plot_24h_bar_greyed(xs, ys, title, ylabel):
     fig = Figure(figsize=(13, 2.5))
-    
     axis = fig.add_subplot(1, 1, 1)
     current_hour = datetime.now().hour
 
@@ -238,8 +237,7 @@ def plot_24h_bar_greyed(xs, ys, title, ylabel):
     for x, y in zip(xs, ys):
         full_ys[x] = y
 
-    # Order hours based on current hour
-    ordered_hours = sorted(full_xs, key=lambda x: (x - 1 - current_hour) % 24)
+    ordered_hours = sorted(full_xs, key=lambda x: (x - 1 - current_hour) % 24)     # Order hours based on current hour
     ordered_ys = [full_ys[x] for x in ordered_hours]
 
     bar_width = 0.5
