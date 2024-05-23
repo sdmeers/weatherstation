@@ -91,8 +91,9 @@ def home():
                            annual_max_rain_rate = round(year_data['rain_rate'].max()*3600,1),
                            annual_max_wind_speed = round(year_data['wind_speed'].max()*2.23694,1),
                            table=df_html,
-			   index_URL = IP_addresses.get('index_URL', '192.168.0.1')
-                           )
+			               index_URL = IP_addresses.get('index_URL', '192.168.0.1'),
+                           dashboard_URL = IP_addresses.get('dashboard_URL', 'http://192.168.0.1')
+                          )
 
 @app.route('/weather-data', methods=['POST'])
 def weather_data():

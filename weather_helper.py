@@ -171,6 +171,7 @@ def get_data(*args):
         raise ValueError("Invalid arguments")
 
     data = pd.DataFrame(read_data_from_db(query), columns=("id", "datetime", "temperature", "pressure", "humidity", "rain", "rain_rate", "luminance", "wind_speed", "wind_direction", "day", "week", "month", "year"))
+
     return data
 
 def convert_wind_direction(deg):
