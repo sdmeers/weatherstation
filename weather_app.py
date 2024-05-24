@@ -14,6 +14,7 @@ from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 from matplotlib.dates import DateFormatter, DayLocator
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import matplotlib.colors as mcolors
 from sql_config import config, IP_addresses
 import calendar
 import json
@@ -329,6 +330,29 @@ def plot_annual_max_temperatures_png():
     data = get_data("year")
     data.set_index('datetime', inplace = True)
     fig = plot_annual(data, 'max', 'coolwarm')
+    output = io.BytesIO()
+    FigureCanvas(fig).print_png(output)
+    return Response(output.getvalue(), mimetype='image/png')
+
+@app.route('/plot_annual_rain_days.png')
+def plot_annual_rain_days_png():
+    data = get_data("year")
+    data.set_index('datetime', inplace=True)
+
+    # Aggregate rain data to get binary values: 1 if rain occurred, 0 otherwise
+    rain_data = data['rain'].resample('D').sum() > 0  # True if any rain occurred on that day
+    rain_data = rain_data.astype(int)  # Convert boolean to int (1 for True, 0 for False)
+
+    # Create a custom colormap for binary data (0: transparent, 1: black)
+    cmap = mcolors.ListedColormap(['#f0f0f0', 'black'])
+
+    # Create the calplot with the same parameters as plot_annual
+    fig, axis = calplot.calplot(data=rain_data, how='sum', figsize=(13, 2.5), cmap=cmap, linecolor='#ffffff', yearlabels=True, colorbar=False)
+    fig.set_facecolor('#ffffff')
+    for ax in axis.flatten():
+        ax.set_facecolor('#ffffff')
+    plt.rcParams['font.family'] = 'DejaVu Sans'
+
     output = io.BytesIO()
     FigureCanvas(fig).print_png(output)
     return Response(output.getvalue(), mimetype='image/png')
