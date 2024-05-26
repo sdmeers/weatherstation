@@ -46,20 +46,21 @@ app.index_string = '''
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 45px; /* Match height to Flask app */
-            font-size: 18px;
+            height: 44px; /* Match height to Flask app */
         }
         .navbar-custom a {
             text-decoration: none;
             color: white !important;
             font-family: 'Raleway', sans-serif;
             font-size: 18px;
+            font-weight: 400;
             display: flex;
             align-items: center;
         }
         .navbar-custom i {
             margin-right: 5px;
         }
+        
         .center-table {
             margin-left: auto;
             margin-right: auto;
@@ -80,7 +81,7 @@ app.index_string = '''
 <body>
     <div class="navbar-custom">
         <a href="http://192.168.50.51:5000"><i class="fa fa-dashboard"></i> Weather Dashboard</a>
-        <a href="http://192.168.50.51/index.php"><i class="fa fa-database"></i> View data</a>
+        <a href="http://192.168.50.51/index.php"><i class="fa-solid fa-database"></i> View data</a>
     </div>
     <div id="react-entry-point" style="padding-top: 50px;">
         {%app_entry%}
