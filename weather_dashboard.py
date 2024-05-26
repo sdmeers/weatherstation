@@ -292,8 +292,8 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
             "Maximum Daily Rainfall (mm)", 
             "Maximum Rain Rate (mm/s)",
             "Number of Rainy Days", 
-            "Maximum Wind Speed (mph)"#,
-            #"Average Luminance (lux)"  #average luminance doesn't really make sense
+            "Maximum Wind Speed (mph)",
+            "Average Luminance (lux)"
         ],
         "Value": [
             round(filtered_df['temperature'].median(), 1),
@@ -303,35 +303,42 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
             round(max_daily_rainfall, 1),
             round(filtered_df['rain_rate'].max() * 3600, 1),  # Convert to mm/s
             f"{(filtered_df['rain'].resample('D').sum() > 1.0).sum()}/{len(filtered_df['rain'].resample('D').sum())}",
-            round(filtered_df['wind_speed'].max() * 2.23694, 1)#,  # Convert to mph
-            #round(filtered_df['luminance'].mean(), 1) #average luminance doesn't really make sense
+            round(filtered_df['wind_speed'].max() * 2.23694, 1),  # Convert to mph
+            round(filtered_df['luminance'].mean(), 1)
         ]
     }
 
     basic_statistics_data = pd.DataFrame(basic_statistics).to_dict('records')
+
+    # Handle y-axis titles for time series and box plots
+    y_axis_title = f'{col_chosen.capitalize().replace("_", " ")} ({get_unit(col_chosen)})'
+    if col_chosen == 'rain_rate':
+        y_axis_title = 'Rain Rate (mm/s)'
+    elif col_chosen == 'wind_speed':
+        y_axis_title = 'Wind Speed (mph)'
 
     # Create the time series figure
     time_series_fig = px.scatter(
         filtered_df.reset_index(), 
         x='datetime', 
         y=filtered_df[col_chosen] * (3600 if col_chosen == 'rain_rate' else (2.23694 if col_chosen == 'wind_speed' else 1)),
-        title=f'Time Series of {col_chosen.capitalize()}',
+        title=f'Time Series of {col_chosen.capitalize().replace("_", " ")}',
         template=None,  # Explicitly set the template to None
         color_discrete_sequence=['black']
     ).update_layout(showlegend=True)
-    time_series_fig.update_layout(xaxis_title='', yaxis_title=f'{col_chosen.capitalize()} ({get_unit(col_chosen)})')  # Update y-axis title
+    time_series_fig.update_layout(xaxis_title='', yaxis_title=y_axis_title)  # Update y-axis title
 
     # Create the boxplot figure using Plotly Express
     boxplot_fig = px.box(
         filtered_df.reset_index(), 
         x='period', 
         y=filtered_df[col_chosen] * (3600 if col_chosen == 'rain_rate' else (2.23694 if col_chosen == 'wind_speed' else 1)),
-        title=f'Box Plot of {col_chosen.capitalize()}',
+        title=f'Box Plot of {col_chosen.capitalize().replace("_", " ")}',
         points=False,  # Do not show individual points
         template=None,  # Explicitly set the template to None
         color_discrete_sequence=['black']
     ).update_layout(showlegend=True)
-    boxplot_fig.update_layout(xaxis_title='', yaxis_title=f'{col_chosen.capitalize()} ({get_unit(col_chosen)})')  # Update y-axis title
+    boxplot_fig.update_layout(xaxis_title='', yaxis_title=y_axis_title)  # Update y-axis title
 
     # Calculate statistics for the summary table
     statistics = filtered_df.groupby('period').agg(
