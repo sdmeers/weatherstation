@@ -158,7 +158,11 @@ app.layout = dbc.Container([
                 options=[
                     {'label': 'Temperature', 'value': 'temperature'},
                     {'label': 'Humidity', 'value': 'humidity'},
-                    {'label': 'Pressure', 'value': 'pressure'}
+                    {'label': 'Pressure', 'value': 'pressure'},
+                    {'label': 'Rain', 'value': 'rain'},
+                    {'label': 'Rain Rate', 'value': 'rain_rate'},
+                    {'label': 'Luminance', 'value': 'luminance'},
+                    {'label': 'Wind Speed', 'value': 'wind_speed'}
                 ],
                 value='temperature',
                 clearable=False,
@@ -186,6 +190,7 @@ app.layout = dbc.Container([
                 {"name": "Total Rainfall (mm)", "id": "Total Rainfall (mm)"},
                 {"name": "Maximum Rain Rate (mm/s)", "id": "Maximum Rain Rate (mm/s)"},
                 {"name": "Peak Windspeed (mph)", "id": "Peak Windspeed (mph)"},
+                {"name": "Average Luminance (lux)", "id": "Average Luminance (lux)"}
             ], 
             page_size=25,
             style_header={
@@ -202,7 +207,10 @@ def get_unit(col):
         'temperature': 'C',
         'humidity': '%',
         'pressure': 'hPa',
-        'rain': 'mm'
+        'rain': 'mm',
+        'rain_rate': 'mm/s',
+        'luminance': 'lux',
+        'wind_speed': 'mph'
     }
     return units.get(col, '')
 
@@ -276,28 +284,29 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
     max_daily_rainfall = filtered_df['rain'].resample('D').sum().max()
 
     basic_statistics = {
-    "Statistic": [
-        "Median Temperature (C)", 
-        "Minimum Temperature (C)", 
-        "Maximum Temperature (C)", 
-        "Total Rainfall (mm)",
-        "Maximum Daily Rainfall (mm)", 
-        "Maximum Rain Rate (mm/s)",
-        "Number of Rainy Days", 
-        "Maximum Wind Speed (mph)" 
-    ],
-    "Value": [
-        round(filtered_df['temperature'].median(), 1),
-        round(filtered_df['temperature'].min(), 1),
-        round(filtered_df['temperature'].max(), 1),
-        round(filtered_df['rain'].sum(), 1),
-        round(max_daily_rainfall, 1),
-        round(filtered_df['rain_rate'].max() * 3600, 1),  # Convert to mm/s
-        f"{(filtered_df['rain'].resample('D').sum() > 1.0).sum()}/{len(filtered_df['rain'].resample('D').sum())}",    
-        round(filtered_df['wind_speed'].max() * 2.23694, 1)  # Convert to mph
-    ]
-}
-
+        "Statistic": [
+            "Median Temperature (C)", 
+            "Minimum Temperature (C)", 
+            "Maximum Temperature (C)", 
+            "Total Rainfall (mm)",
+            "Maximum Daily Rainfall (mm)", 
+            "Maximum Rain Rate (mm/s)",
+            "Number of Rainy Days", 
+            "Maximum Wind Speed (mph)"#,
+            #"Average Luminance (lux)"  #average luminance doesn't really make sense
+        ],
+        "Value": [
+            round(filtered_df['temperature'].median(), 1),
+            round(filtered_df['temperature'].min(), 1),
+            round(filtered_df['temperature'].max(), 1),
+            round(filtered_df['rain'].sum(), 1),
+            round(max_daily_rainfall, 1),
+            round(filtered_df['rain_rate'].max() * 3600, 1),  # Convert to mm/s
+            f"{(filtered_df['rain'].resample('D').sum() > 1.0).sum()}/{len(filtered_df['rain'].resample('D').sum())}",
+            round(filtered_df['wind_speed'].max() * 2.23694, 1)#,  # Convert to mph
+            #round(filtered_df['luminance'].mean(), 1) #average luminance doesn't really make sense
+        ]
+    }
 
     basic_statistics_data = pd.DataFrame(basic_statistics).to_dict('records')
 
@@ -305,7 +314,7 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
     time_series_fig = px.scatter(
         filtered_df.reset_index(), 
         x='datetime', 
-        y=col_chosen, 
+        y=filtered_df[col_chosen] * (3600 if col_chosen == 'rain_rate' else (2.23694 if col_chosen == 'wind_speed' else 1)),
         title=f'Time Series of {col_chosen.capitalize()}',
         template=None,  # Explicitly set the template to None
         color_discrete_sequence=['black']
@@ -316,7 +325,7 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
     boxplot_fig = px.box(
         filtered_df.reset_index(), 
         x='period', 
-        y=col_chosen, 
+        y=filtered_df[col_chosen] * (3600 if col_chosen == 'rain_rate' else (2.23694 if col_chosen == 'wind_speed' else 1)),
         title=f'Box Plot of {col_chosen.capitalize()}',
         points=False,  # Do not show individual points
         template=None,  # Explicitly set the template to None
@@ -331,7 +340,8 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
         max_temperature=('temperature', 'max'),
         total_rainfall=('rain', 'sum'),
         max_rain_rate=('rain_rate', lambda x: x.max() * 3600),  # Convert to mm/s
-        peak_windspeed=('wind_speed', lambda x: x.max() * 2.23694)  # Convert to mph
+        peak_windspeed=('wind_speed', lambda x: x.max() * 2.23694),  # Convert to mph
+        avg_luminance=('luminance', 'mean')
     ).reset_index()
 
     # Round the statistics to one decimal place
@@ -345,7 +355,8 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
         "Maximum Temperature (C)", 
         "Total Rainfall (mm)", 
         "Maximum Rain Rate (mm/s)", 
-        "Peak Windspeed (mph)"
+        "Peak Windspeed (mph)",
+        "Average Luminance (lux)"
     ]
 
     statistics_data = statistics.to_dict('records')
