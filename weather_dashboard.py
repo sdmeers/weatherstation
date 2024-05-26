@@ -19,25 +19,31 @@ app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 # Add Font Awesome to the index string
 app.index_string = '''
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Weather Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://kit.fontawesome.com/e1d7788428.js" crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         .navbar-custom {
+            display: flex;
+            justify-content: space-between;
             background-color: black;
             color: white;
             padding: 10px;
         }
         .navbar-custom a {
-            color: white !important;
             text-decoration: none;
+            color: white !important;
         }
         .navbar-custom i {
             color: white;
             margin-right: 10px;
+        }
+        .navbar-custom a i {
+            margin-right: 5px;
         }
         .navbar-custom span {
             color: white;
@@ -62,6 +68,7 @@ app.index_string = '''
 <body>
     <div class="navbar-custom">
         <a href="http://192.168.50.51:5000"><i class="fa fa-dashboard"></i> Weather Dashboard</a>
+        <a href="http://192.168.50.51/index.php"><i class="fa-solid fa-database"></i> View data</a>
     </div>
     <div id="react-entry-point">
         {%app_entry%}
