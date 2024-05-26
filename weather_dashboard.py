@@ -328,6 +328,9 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
     ).update_layout(showlegend=True)
     time_series_fig.update_layout(xaxis_title='', yaxis_title=y_axis_title)  # Update y-axis title
 
+    if col_chosen == 'luminance':
+        time_series_fig.update_yaxes(range=[0, 3000])
+
     # Create the boxplot figure using Plotly Express
     boxplot_fig = px.box(
         filtered_df.reset_index(), 
@@ -339,6 +342,9 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
         color_discrete_sequence=['black']
     ).update_layout(showlegend=True)
     boxplot_fig.update_layout(xaxis_title='', yaxis_title=y_axis_title)  # Update y-axis title
+
+    if col_chosen == 'luminance':
+        boxplot_fig.update_yaxes(range=[0, 3000])
 
     # Calculate statistics for the summary table
     statistics = filtered_df.groupby('period').agg(
