@@ -10,10 +10,13 @@ error_reporting(E_ALL);
 */
 ?>
 
+<!DOCTYPE html>
 <html>
 <head>
     <title>Raspberry Pi Weather Log</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/e1d7788428.js" crossorigin="anonymous"></script>
     <style type="text/css">
         /* Existing styles */
         .table_titles, .table_cells_odd, .table_cells_even {
@@ -37,24 +40,20 @@ error_reporting(E_ALL);
             padding: 2px; /* Additional padding for easier clicking */
             text-decoration: none; /* Optional: Removes underline from links */
         }
-
         .pagination-link:hover {
             color: #0056b3; /* Color change on hover for better user experience */
         }
-
         .disabled {
             font-size: 30px; /* Larger font size */
             color: #ccc;
             padding: 2px;
         }
-
         table {
             border: 2px solid #333;
         }
         body {
             font-family: "Trebuchet MS", Arial;
         }
-
         /* Responsive styles */
         @media screen and (max-width: 600px) {
             table {
@@ -77,12 +76,40 @@ error_reporting(E_ALL);
                 font-size: 16px;
             }
         }
+        /* New styles for navbar */
+        .navbar-custom {
+            display: flex;
+            justify-content: space-between;
+            background-color: black;
+            color: white;
+            padding: 8px 10px;
+            z-index: 4;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            font-family: 'Raleway', sans-serif;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        .navbar-custom a {
+            text-decoration: none;
+            color: white !important;
+            font-size: 18px;
+        }
+        .navbar-custom i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
     </style>
 </head>
-
 <body>
-    <h1>Raspberry Pi Weather Log</h1>
+    <!-- Navigation bar -->
+    <div class="navbar-custom">
+        <a href="http://192.168.50.51:5000"><i class="fa-solid fa-magnifying-glass-chart"></i>Weather Summary</a>
+        <a href="http://192.168.50.51:5001"><i class="fa fa-dashboard"></i>Weather Dashboard</a>
+    </div>
 
+    <h1 style="padding-top: 60px;">Raspberry Pi Weather Log</h1> <!-- Added padding to account for fixed navbar -->
 
 <table border="0" cellspacing="0" cellpadding="4">
     <tr>
