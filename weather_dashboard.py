@@ -196,6 +196,16 @@ app.layout = dbc.Container([
     ])
 ], fluid=True)
 
+# Helper function to get units based on the column chosen
+def get_unit(col):
+    units = {
+        'temperature': 'C',
+        'humidity': '%',
+        'pressure': 'hPa',
+        'rain': 'mm'
+    }
+    return units.get(col, '')
+
 # Callback to update the graphs and tables based on selected date range and column
 @callback(
     Output('temperature-bar-chart', 'figure'),
@@ -300,7 +310,8 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
         template=None,  # Explicitly set the template to None
         color_discrete_sequence=['black']
     ).update_layout(showlegend=True)
-    
+    time_series_fig.update_layout(xaxis_title='', yaxis_title=f'{col_chosen.capitalize()} ({get_unit(col_chosen)})')  # Update y-axis title
+
     # Create the boxplot figure using Plotly Express
     boxplot_fig = px.box(
         filtered_df.reset_index(), 
@@ -311,6 +322,7 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
         template=None,  # Explicitly set the template to None
         color_discrete_sequence=['black']
     ).update_layout(showlegend=True)
+    boxplot_fig.update_layout(xaxis_title='', yaxis_title=f'{col_chosen.capitalize()} ({get_unit(col_chosen)})')  # Update y-axis title
 
     # Calculate statistics for the summary table
     statistics = filtered_df.groupby('period').agg(
