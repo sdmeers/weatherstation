@@ -161,8 +161,8 @@ app.layout = dbc.Container([
                     {'label': 'Pressure', 'value': 'pressure'},
                     {'label': 'Rain', 'value': 'rain'},
                     {'label': 'Rain Rate', 'value': 'rain_rate'},
-                    {'label': 'Luminance', 'value': 'luminance'},
-                    {'label': 'Wind Speed', 'value': 'wind_speed'}
+                    {'label': 'Wind Speed', 'value': 'wind_speed'},
+                    {'label': 'Luminance', 'value': 'luminance'}
                 ],
                 value='temperature',
                 clearable=False,
