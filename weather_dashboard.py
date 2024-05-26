@@ -234,10 +234,12 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
         temp_df = filtered_df.groupby('period')['temperature'].median().reset_index()
 
     temp_bar_fig = px.bar(temp_df, x='period', y='temperature', title='Temperature', color_discrete_sequence=['black'])
+    temp_bar_fig.update_layout(xaxis_title='', yaxis_title='Temperature (C)')  # Update y-axis title
 
     # Create the total rainfall bar chart
     total_rainfall_df = filtered_df.groupby('period')['rain'].sum().reset_index()
     total_rainfall_bar_fig = px.bar(total_rainfall_df, x='period', y='rain', title='Total Rainfall (mm)', color_discrete_sequence=['black'])
+    total_rainfall_bar_fig.update_layout(xaxis_title='', yaxis_title='Rainfall (mm)')  # Update y-axis title
 
     # Create the wind direction radar chart
     filtered_df['wind_direction_converted'] = filtered_df['wind_direction'].apply(convert_wind_direction)
