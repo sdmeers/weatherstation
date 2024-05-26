@@ -292,8 +292,8 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
             "Maximum Daily Rainfall (mm)", 
             "Maximum Rain Rate (mm/s)",
             "Number of Rainy Days", 
-            "Maximum Wind Speed (mph)",
-            "Average Luminance (lux)"
+            "Maximum Wind Speed (mph)"#,
+            #"Average Luminance (lux)" # Average luminance doesn't really make sense in this table
         ],
         "Value": [
             round(filtered_df['temperature'].median(), 1),
@@ -303,8 +303,8 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
             round(max_daily_rainfall, 1),
             round(filtered_df['rain_rate'].max() * 3600, 1),  # Convert to mm/s
             f"{(filtered_df['rain'].resample('D').sum() > 1.0).sum()}/{len(filtered_df['rain'].resample('D').sum())}",
-            round(filtered_df['wind_speed'].max() * 2.23694, 1),  # Convert to mph
-            round(filtered_df['luminance'].mean(), 1)
+            round(filtered_df['wind_speed'].max() * 2.23694, 1)#,  # Convert to mph
+            #round(filtered_df['luminance'].mean(), 1) # Average luminance doesn't really make sense in this table
         ]
     }
 
