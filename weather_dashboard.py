@@ -23,30 +23,42 @@ app.index_string = '''
 <head>
     <title>Weather Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://kit.fontawesome.com/e1d7788428.js" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        html, body {
+            font-family: 'Raleway', sans-serif;
+            font-size: 15px;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
         .navbar-custom {
-            display: flex;
-            justify-content: space-between;
+            width: 100%;
+            overflow: hidden;
             background-color: black;
             color: white;
-            padding: 10px;
+            padding: 8px 16px;
+            z-index: 4;
+            position: fixed;
+            top: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 45px; /* Match height to Flask app */
+            font-size: 18px;
         }
         .navbar-custom a {
             text-decoration: none;
             color: white !important;
+            font-family: 'Raleway', sans-serif;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
         }
         .navbar-custom i {
-            color: white;
-            margin-right: 10px;
-        }
-        .navbar-custom a i {
             margin-right: 5px;
-        }
-        .navbar-custom span {
-            color: white;
         }
         .center-table {
             margin-left: auto;
@@ -68,9 +80,9 @@ app.index_string = '''
 <body>
     <div class="navbar-custom">
         <a href="http://192.168.50.51:5000"><i class="fa fa-dashboard"></i> Weather Dashboard</a>
-        <a href="http://192.168.50.51/index.php"><i class="fa-solid fa-database"></i> View data</a>
+        <a href="http://192.168.50.51/index.php"><i class="fa fa-database"></i> View data</a>
     </div>
-    <div id="react-entry-point">
+    <div id="react-entry-point" style="padding-top: 50px;">
         {%app_entry%}
     </div>
     <footer>
