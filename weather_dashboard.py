@@ -110,16 +110,13 @@ app.layout = dbc.Container([
                 display_format='YYYY-MM-DD'
             ), width="auto"
         ),
-    ], align="center"),
-    html.Hr(),
-    dbc.Row([
         dbc.Col(
             html.Div([
-                html.Button('Today', id='button-today', n_clicks=0, className='btn btn-outline-primary'),
-                html.Button('Week', id='button-week', n_clicks=0, className='btn btn-outline-primary', style={'margin-left': '10px'}),
-                html.Button('Month', id='button-month', n_clicks=0, className='btn btn-outline-primary', style={'margin-left': '10px'}),
-                html.Button('Year', id='button-year', n_clicks=0, className='btn btn-outline-primary', style={'margin-left': '10px'}),
-            ], style={'margin-top': '10px'}),
+                html.Button('Today', id='button-today', n_clicks=0, className='btn btn-outline-dark'),
+                html.Button('Week', id='button-week', n_clicks=0, className='btn btn-outline-dark', style={'margin-left': '10px'}),
+                html.Button('Month', id='button-month', n_clicks=0, className='btn btn-outline-dark', style={'margin-left': '10px'}),
+                html.Button('Year', id='button-year', n_clicks=0, className='btn btn-outline-dark', style={'margin-left': '10px'}),
+            ], style={'margin-left': '10px', 'display': 'flex', 'align-items': 'center'}),
             width="auto"
         ),
     ], align="center"),
