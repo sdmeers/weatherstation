@@ -273,12 +273,15 @@ def update_date_range(today, week, month, year):
     Input('temperature-radio-items', 'value')
 )
 def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
+    # Ensure the end_date includes the entire day
+    end_date = (pd.to_datetime(end_date) + pd.Timedelta(days=1) - pd.Timedelta(seconds=1)).strftime('%Y-%m-%d %H:%M:%S')
+
     # Filter the dataframe based on the selected date range
     filtered_df = df[(df['datetime'] >= start_date) & (df['datetime'] <= end_date)].copy()
 
     # Determine the granularity for the bar charts and boxplot
     date_range = pd.to_datetime(end_date) - pd.to_datetime(start_date)
-    if date_range <= timedelta(days=1):
+    if date_range <= timedelta(days=2):
         period = filtered_df['datetime'].dt.floor('H')
         tickformat = '%H:%M'
     elif date_range <= timedelta(days=14):
@@ -422,22 +425,29 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
         avg_luminance=('luminance', 'mean')
     ).reset_index()
 
+    # Format the 'period' column for better readability
+    statistics['Period_str'] = statistics['period'].dt.strftime(tickformat)
+
+    # Drop the original period column if it's causing the length mismatch
+    statistics = statistics.drop(columns=['period'])
+
     # Round the statistics to one decimal place
     statistics = statistics.round(1)
 
-    # Rename columns for display
-    statistics.columns = [
-        "Period", 
-        "Median Temperature (C)", 
-        "Minimum Temperature (C)", 
-        "Maximum Temperature (C)", 
-        "Total Rainfall (mm)", 
-        "Maximum Rain Rate (mm/s)", 
-        "Peak Windspeed (mph)",
-        "Average Luminance (lux)"
-    ]
+    # Adjust the final DataFrame for display
+    statistics_data = statistics[['Period_str', 'median_temperature', 'min_temperature', 'max_temperature', 'total_rainfall', 'max_rain_rate', 'peak_windspeed', 'avg_luminance']].to_dict('records')
 
-    statistics_data = statistics.to_dict('records')
+    # Rename columns for display
+    statistics_data = pd.DataFrame(statistics_data).rename(columns={
+        "Period_str": "Period", 
+        "median_temperature": "Median Temperature (C)", 
+        "min_temperature": "Minimum Temperature (C)", 
+        "max_temperature": "Maximum Temperature (C)", 
+        "total_rainfall": "Total Rainfall (mm)", 
+        "max_rain_rate": "Maximum Rain Rate (mm/s)", 
+        "peak_windspeed": "Peak Windspeed (mph)",
+        "avg_luminance": "Average Luminance (lux)"
+    }).to_dict('records')
 
     return temp_bar_fig, total_rainfall_bar_fig, radar_fig, basic_statistics_data, time_series_fig, boxplot_fig, statistics_data
 
