@@ -86,9 +86,10 @@ error_reporting(E_ALL);
         .navbar-custom {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             background-color: black;
             color: white;
-            padding: 8px 16px; /* Adjusted padding for height */
+            padding: 8px 16px;
             z-index: 4;
             position: fixed;
             width: 100%;
@@ -96,27 +97,41 @@ error_reporting(E_ALL);
             font-family: 'Raleway', sans-serif;
             font-size: 18px;
             line-height: 1.5;
+            white-space: nowrap;
+            flex-wrap: nowrap;
+            height: 44px; /* Match height to Dash app */
         }
         .navbar-custom a {
             text-decoration: none;
             color: white !important;
             font-family: 'Raleway', sans-serif;
             font-size: 18px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            padding: 0 8px; /* Adjust padding as needed */
+        }
+        .navbar-custom .left-link {
+            margin-right: auto;
+        }
+        .navbar-custom .right-link {
+            margin-left: auto;
         }
         .navbar-custom i {
-            color: white;
-            margin-right: 10px;
-            font-size: 18px;
+            margin-right: 5px;
         }
 
         /* Responsive text for navbar links */
         .navbar-custom a[data-title]::after {
             content: attr(data-title);
             display: none;
+            margin-left: 5px;
+        }
+        .navbar-custom a[data-title] span {
+            display: inline;
         }
         @media screen and (max-width: 600px) {
-            .navbar-custom a[data-title]::before {
-                content: attr(data-title);
+            .navbar-custom a[data-title]::after {
                 display: inline;
             }
             .navbar-custom a[data-title] span {
@@ -129,8 +144,8 @@ error_reporting(E_ALL);
 <body>
     <!-- Navigation bar -->
     <div class="navbar-custom">
-        <a href="http://192.168.50.51:5000" data-title="Summary"><i class="fa fa-dashboard"></i> <span>Summary</span></a>
-        <a href="http://192.168.50.51:5001" data-title="Dashboard"><i class="fa-solid fa-magnifying-glass-chart"></i> <span>Dashboard</span></a>
+        <a href="http://192.168.50.51:5000" data-title="Summary" class="left-link"><i class="fa fa-dashboard"></i> <span>Weather Summary</span></a>
+        <a href="http://192.168.50.51:5001" data-title="Dashboard" class="right-link"><i class="fa-solid fa-magnifying-glass-chart"></i> <span>Weather Dashboard</span></a>
     </div>
 
     <h1 style="padding-top: 60px;">Raspberry Pi Weather Log</h1> <!-- Added padding to account for fixed navbar -->
