@@ -129,8 +129,8 @@ error_reporting(E_ALL);
 <body>
     <!-- Navigation bar -->
     <div class="navbar-custom">
-        <a href="http://192.168.50.51:5000" data-title="Weather Summary"><i class="fa-solid fa-magnifying-glass-chart"></i> <span>Weather Summary</span></a>
-        <a href="http://192.168.50.51:5001" data-title="Weather Dashboard"><i class="fa-solid fa-database"></i> <span>Weather Dashboard</span></a>
+        <a href="http://192.168.50.51:5000" data-title="Summary"><i class="fa fa-dashboard"></i> <span>Summary</span></a>
+        <a href="http://192.168.50.51:5001" data-title="Dashboard"><i class="fa-solid fa-magnifying-glass-chart"></i> <span>Dashboard</span></a>
     </div>
 
     <h1 style="padding-top: 60px;">Raspberry Pi Weather Log</h1> <!-- Added padding to account for fixed navbar -->
