@@ -274,18 +274,24 @@ def update_date_range(today, week, month, year):
 )
 def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
     # Filter the dataframe based on the selected date range
-    filtered_df = df.loc[(df['datetime'] >= start_date) & (df['datetime'] <= end_date)].copy()
-    
+    filtered_df = df[(df['datetime'] >= start_date) & (df['datetime'] <= end_date)].copy()
+
     # Determine the granularity for the bar charts and boxplot
     date_range = pd.to_datetime(end_date) - pd.to_datetime(start_date)
-    if date_range <= timedelta(days=3):
-        filtered_df['period'] = filtered_df['datetime'].dt.to_period('H').astype(str)  # Hourly
-    elif date_range <= timedelta(days=32):
-        filtered_df['period'] = filtered_df['datetime'].dt.to_period('D').astype(str)  # Daily
+    if date_range <= timedelta(days=1):
+        period = filtered_df['datetime'].dt.floor('H')
+        tickformat = '%H:%M'
+    elif date_range <= timedelta(days=14):
+        period = filtered_df['datetime'].dt.floor('D')
+        tickformat = '%d-%b'
     elif date_range <= timedelta(days=92):  # Approximately 3 months
-        filtered_df['period'] = filtered_df['datetime'].dt.to_period('W').astype(str)  # Weekly
+        period = filtered_df['datetime'].dt.to_period('W').apply(lambda r: r.start_time)
+        tickformat = '%d-%b'
     else:
-        filtered_df['period'] = filtered_df['datetime'].dt.to_period('M').astype(str)  # Monthly
+        period = filtered_df['datetime'].dt.to_period('M').apply(lambda r: r.start_time)
+        tickformat = '%b-%Y'
+
+    filtered_df['period'] = period
 
     # Create the temperature bar chart based on selected statistic
     if temp_stat == 'min':
@@ -296,12 +302,18 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
         temp_df = filtered_df.groupby('period')['temperature'].median().reset_index()
 
     temp_bar_fig = px.bar(temp_df, x='period', y='temperature', title='Temperature', color_discrete_sequence=['black'])
-    temp_bar_fig.update_layout(xaxis_title='', yaxis_title='Temperature (C)')  # Update y-axis title
+    temp_bar_fig.update_layout(
+        xaxis_title='', yaxis_title='Temperature (C)',
+        xaxis=dict(tickformat=tickformat)
+    )
 
     # Create the total rainfall bar chart
     total_rainfall_df = filtered_df.groupby('period')['rain'].sum().reset_index()
     total_rainfall_bar_fig = px.bar(total_rainfall_df, x='period', y='rain', title='Total Rainfall (mm)', color_discrete_sequence=['black'])
-    total_rainfall_bar_fig.update_layout(xaxis_title='', yaxis_title='Rainfall (mm)')  # Update y-axis title
+    total_rainfall_bar_fig.update_layout(
+        xaxis_title='', yaxis_title='Rainfall (mm)',
+        xaxis=dict(tickformat=tickformat)
+    )
 
     # Create the wind direction radar chart
     filtered_df['wind_direction_converted'] = filtered_df['wind_direction'].apply(convert_wind_direction)
@@ -354,6 +366,9 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
 
     basic_statistics_data = pd.DataFrame(basic_statistics).to_dict('records')
 
+    # Reset the index to ensure 'datetime' is available for time series figure
+    filtered_df.reset_index(inplace=True)
+
     # Handle y-axis titles for time series and box plots
     y_axis_title = f'{col_chosen.capitalize().replace("_", " ")} ({get_unit(col_chosen)})'
     if col_chosen == 'rain_rate':
@@ -363,21 +378,24 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
 
     # Create the time series figure
     time_series_fig = px.scatter(
-        filtered_df.reset_index(), 
+        filtered_df, 
         x='datetime', 
         y=filtered_df[col_chosen] * (3600 if col_chosen == 'rain_rate' else (2.23694 if col_chosen == 'wind_speed' else 1)),
         title=f'Time Series of {col_chosen.capitalize().replace("_", " ")}',
         template=None,  # Explicitly set the template to None
         color_discrete_sequence=['black']
     ).update_layout(showlegend=True)
-    time_series_fig.update_layout(xaxis_title='', yaxis_title=y_axis_title)  # Update y-axis title
+    time_series_fig.update_layout(
+        xaxis_title='', yaxis_title=y_axis_title,
+        xaxis=dict(tickformat=tickformat)
+    )
 
     if col_chosen == 'luminance':
         time_series_fig.update_yaxes(range=[0, 3000])
 
     # Create the boxplot figure using Plotly Express
     boxplot_fig = px.box(
-        filtered_df.reset_index(), 
+        filtered_df, 
         x='period', 
         y=filtered_df[col_chosen] * (3600 if col_chosen == 'rain_rate' else (2.23694 if col_chosen == 'wind_speed' else 1)),
         title=f'Box Plot of {col_chosen.capitalize().replace("_", " ")}',
@@ -385,7 +403,10 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
         template=None,  # Explicitly set the template to None
         color_discrete_sequence=['black']
     ).update_layout(showlegend=True)
-    boxplot_fig.update_layout(xaxis_title='', yaxis_title=y_axis_title)  # Update y-axis title
+    boxplot_fig.update_layout(
+        xaxis_title='', yaxis_title=y_axis_title,
+        xaxis=dict(tickformat=tickformat)
+    )
 
     if col_chosen == 'luminance':
         boxplot_fig.update_yaxes(range=[0, 3000])
