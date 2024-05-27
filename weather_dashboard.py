@@ -1,5 +1,7 @@
 from dash import Dash, html, dcc, callback, Output, Input, dash_table, State
+import dash
 import dash_bootstrap_components as dbc
+from dash.exceptions import PreventUpdate
 from weather_helper import get_data, convert_wind_direction
 from datetime import datetime, timedelta
 import pandas as pd
@@ -111,6 +113,18 @@ app.layout = dbc.Container([
     ], align="center"),
     html.Hr(),
     dbc.Row([
+        dbc.Col(
+            html.Div([
+                html.Button('Today', id='button-today', n_clicks=0, className='btn btn-outline-primary'),
+                html.Button('Week', id='button-week', n_clicks=0, className='btn btn-outline-primary', style={'margin-left': '10px'}),
+                html.Button('Month', id='button-month', n_clicks=0, className='btn btn-outline-primary', style={'margin-left': '10px'}),
+                html.Button('Year', id='button-year', n_clicks=0, className='btn btn-outline-primary', style={'margin-left': '10px'}),
+            ], style={'margin-top': '10px'}),
+            width="auto"
+        ),
+    ], align="center"),
+    html.Hr(),
+    dbc.Row([
         dbc.Col([
             html.Div(
                 [
@@ -214,6 +228,39 @@ def get_unit(col):
     }
     return units.get(col, '')
 
+# Callback to update the date range when buttons are clicked
+@app.callback(
+    [Output('date-picker-range', 'start_date'),
+     Output('date-picker-range', 'end_date')],
+    [Input('button-today', 'n_clicks'),
+     Input('button-week', 'n_clicks'),
+     Input('button-month', 'n_clicks'),
+     Input('button-year', 'n_clicks')]
+)
+def update_date_range(today, week, month, year):
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        raise PreventUpdate
+    else:
+        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+    
+    now = datetime.now()
+    if button_id == 'button-today':
+        start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date = now
+        return start_date.date(), end_date
+    elif button_id == 'button-week':
+        start_date = now - timedelta(days=7)
+        return start_date.date(), now.date()
+    elif button_id == 'button-month':
+        start_date = now.replace(day=1)
+        return start_date.date(), now.date()
+    elif button_id == 'button-year':
+        start_date = now.replace(month=1, day=1)
+        return start_date.date(), now.date()
+    else:
+        raise PreventUpdate
+
 # Callback to update the graphs and tables based on selected date range and column
 @callback(
     Output('temperature-bar-chart', 'figure'),
@@ -236,7 +283,7 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
     date_range = pd.to_datetime(end_date) - pd.to_datetime(start_date)
     if date_range <= timedelta(days=3):
         filtered_df['period'] = filtered_df['datetime'].dt.to_period('H').astype(str)  # Hourly
-    elif date_range <= timedelta(days=14):
+    elif date_range <= timedelta(days=32):
         filtered_df['period'] = filtered_df['datetime'].dt.to_period('D').astype(str)  # Daily
     elif date_range <= timedelta(days=92):  # Approximately 3 months
         filtered_df['period'] = filtered_df['datetime'].dt.to_period('W').astype(str)  # Weekly
