@@ -273,8 +273,15 @@ def update_date_range(today, week, month, year):
     Input('temperature-radio-items', 'value')
 )
 def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
-    # Ensure the end_date includes the entire day
-    end_date = (pd.to_datetime(end_date) + pd.Timedelta(days=1) - pd.Timedelta(seconds=1)).strftime('%Y-%m-%d %H:%M:%S')
+    # Convert dates to datetime objects
+    start_date = pd.to_datetime(start_date)
+    end_date = pd.to_datetime(end_date)
+
+    # Ensure end_date includes the entire day if it's a valid date
+    if pd.notna(end_date):
+        end_date = (end_date + pd.Timedelta(days=1) - pd.Timedelta(seconds=1)).strftime('%Y-%m-%d %H:%M:%S')
+    else:
+        end_date = pd.to_datetime('now')
 
     # Filter the dataframe based on the selected date range
     filtered_df = df[(df['datetime'] >= start_date) & (df['datetime'] <= end_date)].copy()
