@@ -34,66 +34,73 @@ def home():
     month_data = get_data("month") #can be month=n where n=1 to 12
     year_data = get_data("year")
 
-    #Code to plot table summarising annual data
-    total_rain = year_data.groupby([year_data['datetime'].dt.month])['rain'].sum()   
-    average_monthly_temperature = year_data.groupby([year_data['datetime'].dt.month])['temperature'].mean()
-    max_monthly_temperature = year_data.groupby([year_data['datetime'].dt.month])['temperature'].max()
-    min_monthly_temperature = year_data.groupby([year_data['datetime'].dt.month])['temperature'].min()
-    #peak_wind_speed = year_data.groupby([year_data['datetime'].dt.month])['wind_speed'].max()*2.23694 
-    #peak_rain_rate = year_data.groupby([year_data['datetime'].dt.month])['rain_rate'].max()*3600  
+    # Ensure the datetime column is in datetime format
+    year_data['datetime'] = pd.to_datetime(year_data['datetime'])
+
+    # Set the datetime column as the index
+    year_data.set_index('datetime', inplace=True)
+
+    # Code to plot table summarising annual data
+    total_rain = year_data.groupby(year_data.index.month)['rain'].sum()   
+    average_monthly_temperature = year_data.groupby(year_data.index.month)['temperature'].mean()
+    max_monthly_temperature = year_data.groupby(year_data.index.month)['temperature'].max()
+    min_monthly_temperature = year_data.groupby(year_data.index.month)['temperature'].min()
 
     monthly_data = {
         'Av. Temp (C)': average_monthly_temperature,
         'Max Temp (C)': max_monthly_temperature,
         'Min Temp (C)': min_monthly_temperature,
         'Total Rain (mm)': total_rain,
-        #'Peak Rain (mm/s)': peak_rain_rate,
-        #'Peak Wind (mph)': peak_wind_speed
     }
-    
+
     df = pd.DataFrame(monthly_data)
     df = df.round(1)
     df.index = [calendar.month_name[month] for month in df.index]
     df_html = df.to_html(classes='w3-table-all w3-responsive', escape=False)
 
-    #pass all the various variables to the webpage so flask can render using {{}} notation
+    num_rainy_days = (year_data['rain'].resample('D').sum() > 1.0).sum()
+    total_days = len(year_data['rain'].resample('D').sum())
+
     return render_template('current.html', 
-                           time_of_latest_reading = datetime.strftime(latest_data['datetime'][0],'%A at %H:%M'),
-                           latest_temperature = round(latest_data['temperature'][0],1),
-                           latest_humidity = round(latest_data['humidity'][0],1), 
-                           latest_rain_rate = round(latest_data['rain_rate'][0]*3600,1),
-                           latest_pressure = round(latest_data['pressure'][0],1),
-                           latest_luminance = round(latest_data['luminance'][0],1),
-                           latest_wind_speed_mph = round(latest_data['wind_speed'][0]*2.23694,1),
-                           latest_wind_direction = latest_data['wind_direction'][0],
-                           latest_wind_direction_converted = convert_wind_direction(latest_data['wind_direction'][0]),
-                           todays_max_temperature = round(todays_data['temperature'].max(),1),
-                           todays_min_temperature = round(todays_data['temperature'].min(),1),
-                           todays_total_rain = round(todays_data['rain'].sum(),1),
-                           todays_average_pressure = round(todays_data['pressure'].mean(),1),
-                           yesterdays_max_temperature = round(yesterdays_data['temperature'].max(),1),
-                           yesterdays_min_temperature = round(yesterdays_data['temperature'].min(),1),
-                           yesterdays_total_rain = round(yesterdays_data['rain'].sum(),1),
-                           yesterdays_max_rain_rate = round(yesterdays_data['rain_rate'].max()*3600,1),
-                           yesterdays_max_wind_speed = round(yesterdays_data['wind_speed'].max()*2.23694,1),
-                           weekly_max_temperature = round(week_data['temperature'].max(),1),
-                           weekly_min_temperature = round(week_data['temperature'].min(),1),
-                           weekly_total_rain = round(week_data['rain'].sum(),1),
-                           weekly_max_rain_rate = round(week_data['rain_rate'].max()*3600,1),
-                           weekly_max_wind_speed = round(week_data['wind_speed'].max()*2.23694,1),
-                           monthly_max_temperature = round(month_data['temperature'].max(),1),
-                           monthly_min_temperature = round(month_data['temperature'].min(),1),
-                           monthly_total_rain = round(month_data['rain'].sum(),1),
-                           monthly_max_rain_rate = round(month_data['rain_rate'].max()*3600,1),
-                           monthly_max_wind_speed = round(month_data['wind_speed'].max()*2.23694,1),
-                           annual_max_temperature = round(year_data['temperature'].max(),1),
-                           annual_min_temperature = round(year_data['temperature'].min(),1),
-                           annual_total_rain = round(year_data['rain'].sum(),1),
-                           annual_max_rain_rate = round(year_data['rain_rate'].max()*3600,1),
-                           annual_max_wind_speed = round(year_data['wind_speed'].max()*2.23694,1),
+                           time_of_latest_reading=datetime.strftime(latest_data['datetime'][0],'%A at %H:%M'),
+                           latest_temperature=round(latest_data['temperature'][0],1),
+                           latest_humidity=round(latest_data['humidity'][0],1), 
+                           latest_rain_rate=round(latest_data['rain_rate'][0]*3600,1),
+                           latest_pressure=round(latest_data['pressure'][0],1),
+                           latest_luminance=round(latest_data['luminance'][0],1),
+                           latest_wind_speed_mph=round(latest_data['wind_speed'][0]*2.23694,1),
+                           latest_wind_direction=latest_data['wind_direction'][0],
+                           latest_wind_direction_converted=convert_wind_direction(latest_data['wind_direction'][0]),
+                           todays_max_temperature=round(todays_data['temperature'].max(),1),
+                           todays_min_temperature=round(todays_data['temperature'].min(),1),
+                           todays_total_rain=round(todays_data['rain'].sum(),1),
+                           todays_average_pressure=round(todays_data['pressure'].mean(),1),
+                           yesterdays_max_temperature=round(yesterdays_data['temperature'].max(),1),
+                           yesterdays_min_temperature=round(yesterdays_data['temperature'].min(),1),
+                           yesterdays_total_rain=round(yesterdays_data['rain'].sum(),1),
+                           yesterdays_max_rain_rate=round(yesterdays_data['rain_rate'].max()*3600,1),
+                           yesterdays_max_wind_speed=round(yesterdays_data['wind_speed'].max()*2.23694,1),
+                           weekly_max_temperature=round(week_data['temperature'].max(),1),
+                           weekly_min_temperature=round(week_data['temperature'].min(),1),
+                           weekly_total_rain=round(week_data['rain'].sum(),1),
+                           weekly_max_rain_rate=round(week_data['rain_rate'].max()*3600,1),
+                           weekly_max_wind_speed=round(week_data['wind_speed'].max()*2.23694,1),
+                           monthly_max_temperature=round(month_data['temperature'].max(),1),
+                           monthly_min_temperature=round(month_data['temperature'].min(),1),
+                           monthly_total_rain=round(month_data['rain'].sum(),1),
+                           monthly_max_rain_rate=round(month_data['rain_rate'].max()*3600,1),
+                           monthly_max_wind_speed=round(month_data['wind_speed'].max()*2.23694,1),
+                           annual_max_temperature=round(year_data['temperature'].max(),1),
+                           annual_min_temperature=round(year_data['temperature'].min(),1),
+                           annual_total_rain=round(year_data['rain'].sum(),1),
+                           annual_max_rain_rate=round(year_data['rain_rate'].max()*3600,1),
+                           annual_max_wind_speed=round(year_data['wind_speed'].max()*2.23694,1),
+                           num_rainy_days=num_rainy_days,
+                           total_days=total_days,
+                           rainy_percent = round(100*(num_rainy_days/total_days)),
                            table=df_html,
-			               index_URL = IP_addresses.get('index_URL', '192.168.0.1'),
-                           dashboard_URL = IP_addresses.get('dashboard_URL', 'http://192.168.0.1')
+                           index_URL=IP_addresses.get('index_URL', '192.168.0.1'),
+                           dashboard_URL=IP_addresses.get('dashboard_URL', 'http://192.168.0.1')
                           )
 
 @app.route('/weather-data', methods=['POST'])
