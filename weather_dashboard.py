@@ -116,6 +116,7 @@ app.layout = dbc.Container([
                 html.Button('Week', id='button-week', n_clicks=0, className='btn btn-outline-dark', style={'margin-left': '10px'}),
                 html.Button('Month', id='button-month', n_clicks=0, className='btn btn-outline-dark', style={'margin-left': '10px'}),
                 html.Button('Year', id='button-year', n_clicks=0, className='btn btn-outline-dark', style={'margin-left': '10px'}),
+                html.Button('All', id='button-all', n_clicks=0, className='btn btn-outline-dark', style={'margin-left': '10px'}),
             ], style={'margin-left': '10px', 'display': 'flex', 'align-items': 'center'}),
             width="auto"
         ),
@@ -235,9 +236,10 @@ def get_unit(col):
     [Input('button-today', 'n_clicks'),
      Input('button-week', 'n_clicks'),
      Input('button-month', 'n_clicks'),
-     Input('button-year', 'n_clicks')]
+     Input('button-year', 'n_clicks'),
+     Input('button-all', 'n_clicks')]
 )
-def update_date_range(today, week, month, year):
+def update_date_range(today, week, month, year, all):
     ctx = dash.callback_context
     if not ctx.triggered:
         raise PreventUpdate
@@ -258,6 +260,10 @@ def update_date_range(today, week, month, year):
     elif button_id == 'button-year':
         start_date = now.replace(month=1, day=1)
         return start_date.date(), now.date()
+    elif button_id == 'button-all':
+        start_date = df['datetime'].min()
+        end_date=df['datetime'].max()
+        return start_date, end_date
     else:
         raise PreventUpdate
 
