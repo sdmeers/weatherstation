@@ -262,15 +262,6 @@ def plot_24h_bar_greyed(xs, ys, title, ylabel):
     axis.set_title(title)
     return fig
 
-# may need to change to calplot.yearplot to just show one year 
-def plot_annual(data, how, cmap):
-    fig, axis = calplot.calplot(data = data['temperature'], how = how,  figsize=(13,2.5) , cmap = cmap, linecolor='#ffffff', yearlabels=True, colorbar=False, textformat='{:.0f}')#,suptitle = title)
-    fig.set_facecolor('#ffffff')
-    for ax in axis.flatten():
-        ax.set_facecolor('#ffffff')
-    plt.rcParams['font.family'] = 'DejaVu Sans'
-    return fig
-
 # these functions plot each graph. One is needed per graph
 @app.route('/plot_temperature.png')
 def plot_temperature_png():
@@ -334,20 +325,29 @@ def plot_annual_max_temperatures_png():
     FigureCanvas(fig).print_png(output)
     return Response(output.getvalue(), mimetype='image/png')
 
+# may need to change to calplot.yearplot to just show one year 
+def plot_annual(data, how, cmap):
+    fig, axis = calplot.calplot(data = data['temperature'], how = how,  figsize=(13,2.5) , cmap = cmap, linecolor='#ffffff', yearlabels=True, colorbar=False, textformat='{:.0f}')#,suptitle = title)
+    fig.set_facecolor('#ffffff')
+    for ax in axis.flatten():
+        ax.set_facecolor('#ffffff')
+    plt.rcParams['font.family'] = 'DejaVu Sans'
+    return fig
+
 @app.route('/plot_annual_rain_days.png')
 def plot_annual_rain_days_png():
     data = get_data("year")
     data.set_index('datetime', inplace=True)
 
     # Aggregate rain data to get binary values: 1 if rain occurred, 0 otherwise
-    rain_data = data['rain'].resample('D').sum() > 0  # True if any rain occurred on that day
+    rain_data = data['rain'].resample('D').sum() > 1  # True if more than 1mm rain occurred on that day
     rain_data = rain_data.astype(int)  # Convert boolean to int (1 for True, 0 for False)
 
     # Create a custom colormap for binary data (0: transparent, 1: black)
     cmap = mcolors.ListedColormap(['#f0f0f0', 'black'])
 
     # Create the calplot with the same parameters as plot_annual
-    fig, axis = calplot.calplot(data=rain_data, how='sum', figsize=(13, 2.5), cmap=cmap, linecolor='#ffffff', yearlabels=True, colorbar=False)
+    fig, axis = calplot.calplot(data=rain_data, how='sum', figsize=(13, 2.5), cmap=cmap, linecolor='#ffffff', yearlabels=True, colorbar=False, vmin = 0, vmax = 1)
     fig.set_facecolor('#ffffff')
     for ax in axis.flatten():
         ax.set_facecolor('#ffffff')
