@@ -326,7 +326,7 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
         yaxis_title='Temperature (C)',
         xaxis=dict(
             tickformat=tickformat,
-            tickangle=0# -45  # Slant labels at 45 degrees
+            tickangle= -45  # Slant labels at 45 degrees
         )
     )
 
@@ -338,7 +338,7 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
         yaxis_title='Rainfall (mm)',
         xaxis=dict(
             tickformat=tickformat,
-            tickangle=0 #-45  # Slant labels at 45 degrees
+            tickangle= -45  # Slant labels at 45 degrees
         )
     )
 
