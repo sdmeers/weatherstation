@@ -247,7 +247,7 @@ def update_date_range(today, week, month, year):
         end_date = now
         return start_date.date(), end_date
     elif button_id == 'button-week':
-        start_date = now - timedelta(days=7)
+        start_date = now - timedelta(days=6)
         return start_date.date(), now.date()
     elif button_id == 'button-month':
         start_date = now.replace(day=1)
