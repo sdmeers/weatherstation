@@ -288,7 +288,7 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
 
     # Determine the granularity for the bar charts and boxplot
     date_range = pd.to_datetime(end_date) - pd.to_datetime(start_date)
-    if date_range <= timedelta(days=2):
+    if date_range <= timedelta(days=2):  # Your updated condition
         period = filtered_df['datetime'].dt.floor('H')
         tickformat = '%H:%M'
     elif date_range <= timedelta(days=14):
@@ -296,7 +296,7 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
         tickformat = '%d-%b'
     elif date_range <= timedelta(days=92):  # Approximately 3 months
         period = filtered_df['datetime'].dt.to_period('W').apply(lambda r: r.start_time)
-        tickformat = '%d-%b'
+        tickformat = 'w/c %d-%b'  # Custom tick format for weeks
     else:
         period = filtered_df['datetime'].dt.to_period('M').apply(lambda r: r.start_time)
         tickformat = '%b-%Y'
