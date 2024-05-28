@@ -313,16 +313,24 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
 
     temp_bar_fig = px.bar(temp_df, x='period', y='temperature', title='Temperature', color_discrete_sequence=['black'])
     temp_bar_fig.update_layout(
-        xaxis_title='', yaxis_title='Temperature (C)',
-        xaxis=dict(tickformat=tickformat)
+        xaxis_title='', 
+        yaxis_title='Temperature (C)',
+        xaxis=dict(
+            tickformat=tickformat,
+            tickangle=0# -45  # Slant labels at 45 degrees
+        )
     )
 
     # Create the total rainfall bar chart
     total_rainfall_df = filtered_df.groupby('period')['rain'].sum().reset_index()
     total_rainfall_bar_fig = px.bar(total_rainfall_df, x='period', y='rain', title='Total Rainfall (mm)', color_discrete_sequence=['black'])
     total_rainfall_bar_fig.update_layout(
-        xaxis_title='', yaxis_title='Rainfall (mm)',
-        xaxis=dict(tickformat=tickformat)
+        xaxis_title='', 
+        yaxis_title='Rainfall (mm)',
+        xaxis=dict(
+            tickformat=tickformat,
+            tickangle=0 #-45  # Slant labels at 45 degrees
+        )
     )
 
     # Create the wind direction radar chart
