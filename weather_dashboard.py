@@ -123,23 +123,26 @@ app.layout = dbc.Container([
     html.Hr(),
     dbc.Row([
         dbc.Col([
-            html.Div(
+            dcc.Graph(id='temperature-bar-chart', config={'displayModeBar': False, 'displaylogo': False}),
+            dbc.Row(
                 [
-                    html.Label("Temperature", style={'font-weight': 'bold', 'margin-right': '10px'}),
-                    dbc.RadioItems(
-                        id='temperature-radio-items',
-                        options=[
-                            {'label': 'Minimum', 'value': 'min'},
-                            {'label': 'Median', 'value': 'median'},
-                            {'label': 'Maximum', 'value': 'max'}
-                        ],
-                        value='median',
-                        inline=True,
+                    dbc.Col(
+                        dbc.RadioItems(
+                            id='temperature-radio-items',
+                            options=[
+                                {'label': 'Minimum', 'value': 'min'},
+                                {'label': 'Median', 'value': 'median'},
+                                {'label': 'Maximum', 'value': 'max'}
+                            ],
+                            value='median',
+                            inline=True,
+                        ), 
+                        width="auto"
                     ),
                 ],
-                style={'display': 'flex', 'align-items': 'center', 'margin-bottom': '10px'}
+                className="justify-content-end",
+                style={'margin-top': '-20px'}
             ),
-            dcc.Graph(id='temperature-bar-chart', config={'displayModeBar': False, 'displaylogo': False}),
         ], xs=12, sm=12, md=6, lg=6, xl=6),
         dbc.Col(dcc.Graph(id='total-rainfall-bar-chart', config={'displayModeBar': False, 'displaylogo': False}), xs=12, sm=12, md=6, lg=6, xl=6),
     ]),
@@ -323,7 +326,7 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
 
     # Create the total rainfall bar chart
     total_rainfall_df = filtered_df.groupby('period')['rain'].sum().reset_index()
-    total_rainfall_bar_fig = px.bar(total_rainfall_df, x='period', y='rain', title='Total Rainfall (mm)', color_discrete_sequence=['black'])
+    total_rainfall_bar_fig = px.bar(total_rainfall_df, x='period', y='rain', title='Total Rainfall', color_discrete_sequence=['black'])
     total_rainfall_bar_fig.update_layout(
         xaxis_title='', 
         yaxis_title='Rainfall (mm)',
@@ -344,7 +347,7 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
         line=dict(color='black')
     ))
     radar_fig.update_layout(
-        title='Wind Direction Count',
+        title='Wind Direction',
         polar=dict(
             angularaxis=dict(
                 direction="clockwise",
