@@ -195,24 +195,27 @@ app.layout = dbc.Container([
     ]),
     html.Hr(),
     dbc.Row([
-        dbc.Col(dash_table.DataTable(
-            id='statistics-table', 
-            columns=[
-                {"name": "Period", "id": "Period"},
-                {"name": "Median Temperature (C)", "id": "Median Temperature (C)"},
-                {"name": "Minimum Temperature (C)", "id": "Minimum Temperature (C)"},
-                {"name": "Maximum Temperature (C)", "id": "Maximum Temperature (C)"},
-                {"name": "Total Rainfall (mm)", "id": "Total Rainfall (mm)"},
-                {"name": "Maximum Rain Rate (mm/s)", "id": "Maximum Rain Rate (mm/s)"},
-                {"name": "Peak Windspeed (mph)", "id": "Peak Windspeed (mph)"},
-                {"name": "Average Luminance (lux)", "id": "Average Luminance (lux)"}
-            ], 
-            page_size=25,
-            style_header={
-                'whiteSpace': 'normal',
-                'textAlign': 'center'
-            }
-        ), width=12)
+        dbc.Col(html.Div(
+                dash_table.DataTable(
+                id='statistics-table', 
+                columns=[
+                    {"name": "Period", "id": "Period"},
+                    {"name": "Median Temperature (C)", "id": "Median Temperature (C)"},
+                    {"name": "Minimum Temperature (C)", "id": "Minimum Temperature (C)"},
+                    {"name": "Maximum Temperature (C)", "id": "Maximum Temperature (C)"},
+                    {"name": "Total Rainfall (mm)", "id": "Total Rainfall (mm)"},
+                    {"name": "Maximum Rain Rate (mm/s)", "id": "Maximum Rain Rate (mm/s)"},
+                    {"name": "Peak Windspeed (mph)", "id": "Peak Windspeed (mph)"},
+                    {"name": "Average Luminance (lux)", "id": "Average Luminance (lux)"}
+                ], 
+                page_size=25,
+                style_header={
+                    'whiteSpace': 'normal',
+                    'textAlign': 'center'
+                },
+                style_table={'minWidth': '100%'}
+        ), style={'overflowX': 'auto'}
+    ), width=12)
     ])
 ], fluid=True)
 
@@ -282,9 +285,16 @@ def update_date_range(today, week, month, year, all):
     Input('temperature-radio-items', 'value')
 )
 def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
-    # Convert dates to datetime objects
-    start_date = pd.to_datetime(start_date)
-    end_date = pd.to_datetime(end_date)
+    # Check if start_date and end_date are None and set default values if necessary
+    if start_date is None:
+        start_date = df['datetime'].min()
+    else:
+        start_date = pd.to_datetime(start_date)
+    
+    if end_date is None:
+        end_date = df['datetime'].max()
+    else:
+        end_date = pd.to_datetime(end_date)
 
     # Ensure end_date includes the entire day if it's a valid date
     if pd.notna(end_date):
