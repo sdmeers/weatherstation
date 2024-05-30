@@ -236,46 +236,9 @@ def get_unit(col):
     }
     return units.get(col, '')
 
-# Callback to update the date range when buttons are clicked
-@app.callback(
-    [Output('date-picker-range', 'start_date'),
-     Output('date-picker-range', 'end_date')],
-    [Input('button-today', 'n_clicks'),
-     Input('button-week', 'n_clicks'),
-     Input('button-month', 'n_clicks'),
-     Input('button-year', 'n_clicks'),
-     Input('button-all', 'n_clicks')]
-)
-def update_date_range(today, week, month, year, all):
-    ctx = dash.callback_context
-    if not ctx.triggered:
-        raise PreventUpdate
-    else:
-        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-    
-    now = datetime.now()
-    if button_id == 'button-today':
-        start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
-        end_date = now
-        return start_date.date(), end_date
-    elif button_id == 'button-week':
-        start_date = now - timedelta(days=6)
-        return start_date.date(), now.date()
-    elif button_id == 'button-month':
-        start_date = now.replace(day=1)
-        return start_date.date(), now.date()
-    elif button_id == 'button-year':
-        start_date = now.replace(month=1, day=1)
-        return start_date.date(), now.date()
-    elif button_id == 'button-all':
-        start_date = df['datetime'].min()
-        end_date=df['datetime'].max()
-        return start_date, end_date
-    else:
-        raise PreventUpdate
-
-# Callback to update the graphs and tables based on selected date range and column
 @callback(
+    Output('date-picker-range', 'start_date'),
+    Output('date-picker-range', 'end_date'),
     Output('temperature-bar-chart', 'figure'),
     Output('total-rainfall-bar-chart', 'figure'),
     Output('wind-direction-radar-chart', 'figure'),
@@ -283,37 +246,62 @@ def update_date_range(today, week, month, year, all):
     Output('controls-and-graph', 'figure'),
     Output('boxplot-graph', 'figure'),
     Output('statistics-table', 'data'),
+    Input('button-today', 'n_clicks'),
+    Input('button-week', 'n_clicks'),
+    Input('button-month', 'n_clicks'),
+    Input('button-year', 'n_clicks'),
+    Input('button-all', 'n_clicks'),
     Input('date-picker-range', 'start_date'),
     Input('date-picker-range', 'end_date'),
     Input('controls-and-dropdown', 'value'),
-    Input('temperature-radio-items', 'value'),
-    Input('button-refresh', 'n_clicks')  # Add the refresh button as an input
+    Input('temperature-radio-items', 'value')
 )
-def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat, n_clicks):
-    # Fetch the fresh data whenever the button is clicked
-    df = get_data("all")
-
-    # Check if start_date and end_date are None and set default values if necessary
-    if start_date is None:
-        start_date = df['datetime'].min()
-    else:
-        start_date = pd.to_datetime(start_date)
+def update_graphs_and_table(btn_today, btn_week, btn_month, btn_year, btn_all, start_date, end_date, col_chosen, temp_stat):
     
-    if end_date is None:
+    # Fetch the fresh data
+    df = get_data("all")
+    df['datetime'] = pd.to_datetime(df['datetime'])
+
+    # Determine which button was clicked
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        # Default to show all data on initial load
+        start_date = df['datetime'].min()
         end_date = df['datetime'].max()
     else:
-        end_date = pd.to_datetime(end_date)
+        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+        
+        now = datetime.now()
+        if button_id == 'button-today':
+            start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_date = now
+        elif button_id == 'button-week':
+            start_date = now - timedelta(days=6)
+            end_date = now
+        elif button_id == 'button-month':
+            start_date = now.replace(day=1)
+            end_date = now
+        elif button_id == 'button-year':
+            start_date = now.replace(month=1, day=1)
+            end_date = now
+        elif button_id == 'button-all':
+            start_date = df['datetime'].min()
+            end_date = df['datetime'].max()
+        else:
+            # Use the provided date range if no button was clicked
+            start_date = pd.to_datetime(start_date)
+            end_date = pd.to_datetime(end_date)
 
     # Ensure end_date includes the entire day if it's a valid date
     if pd.notna(end_date):
-        end_date = (end_date + pd.Timedelta(days=1) - pd.Timedelta(seconds=1)).strftime('%Y-%m-%d %H:%M:%S')
+        end_date = end_date.replace(hour=23, minute=59, second=59)
     else:
         end_date = pd.to_datetime('now')
 
     # Filter the dataframe based on the selected date range
     filtered_df = df[(df['datetime'] >= start_date) & (df['datetime'] <= end_date)].copy()
 
-    logging.debug(f"update_graphs start_date: {start_date}, end_date: {end_date}") #, col_chosen: {col_chosen}, temp_stat: {temp_stat}")
+    logging.debug(f"updated graphs start_date: {start_date}, end_date: {end_date}")#, col_chosen: {col_chosen}, temp_stat: {temp_stat}")
 
     # Determine the granularity for the bar charts and boxplot
     date_range = pd.to_datetime(end_date) - pd.to_datetime(start_date)
@@ -493,10 +481,7 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat, n_click
         "avg_luminance": "Average Luminance (lux)"
     }).to_dict('records')
 
-    #logging.debug(f"Filtered DataFrame head:\n{filtered_df.head()}")
-    #logging.debug(f"Generated temp_bar_fig: {temp_bar_fig}, total_rainfall_bar_fig: {total_rainfall_bar_fig}")
-
-    return temp_bar_fig, total_rainfall_bar_fig, radar_fig, basic_statistics_data, time_series_fig, boxplot_fig, statistics_data
+    return start_date.date(), end_date, temp_bar_fig, total_rainfall_bar_fig, radar_fig, basic_statistics_data, time_series_fig, boxplot_fig, statistics_data
 
 # Run the app
 if __name__ == '__main__':
