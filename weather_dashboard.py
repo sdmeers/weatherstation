@@ -286,9 +286,13 @@ def update_date_range(today, week, month, year, all):
     Input('date-picker-range', 'start_date'),
     Input('date-picker-range', 'end_date'),
     Input('controls-and-dropdown', 'value'),
-    Input('temperature-radio-items', 'value')
+    Input('temperature-radio-items', 'value'),
+    Input('button-refresh', 'n_clicks')  # Add the refresh button as an input
 )
-def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
+def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat, n_clicks):
+    # Fetch the fresh data whenever the button is clicked
+    df = get_data("all")
+
     # Check if start_date and end_date are None and set default values if necessary
     if start_date is None:
         start_date = df['datetime'].min()
