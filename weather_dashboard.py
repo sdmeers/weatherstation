@@ -7,6 +7,10 @@ from datetime import datetime, timedelta
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Load live data from MYSQL server using the get_data function. CSV backup commented out
 # df = pd.read_csv("/home/sdmeers/Code/weatherstation/notebooks/20240514_all_data")
@@ -305,6 +309,8 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
     # Filter the dataframe based on the selected date range
     filtered_df = df[(df['datetime'] >= start_date) & (df['datetime'] <= end_date)].copy()
 
+    logging.debug(f"update_graphs start_date: {start_date}, end_date: {end_date}") #, col_chosen: {col_chosen}, temp_stat: {temp_stat}")
+
     # Determine the granularity for the bar charts and boxplot
     date_range = pd.to_datetime(end_date) - pd.to_datetime(start_date)
     if date_range <= timedelta(days=2):  # Your updated condition
@@ -482,6 +488,9 @@ def update_graphs_and_table(start_date, end_date, col_chosen, temp_stat):
         "peak_windspeed": "Peak Windspeed (mph)",
         "avg_luminance": "Average Luminance (lux)"
     }).to_dict('records')
+
+    #logging.debug(f"Filtered DataFrame head:\n{filtered_df.head()}")
+    #logging.debug(f"Generated temp_bar_fig: {temp_bar_fig}, total_rainfall_bar_fig: {total_rainfall_bar_fig}")
 
     return temp_bar_fig, total_rainfall_bar_fig, radar_fig, basic_statistics_data, time_series_fig, boxplot_fig, statistics_data
 
