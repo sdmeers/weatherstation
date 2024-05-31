@@ -7,6 +7,12 @@ As well as the most recently recorded data the webpages plot historic weather da
 
 ![Screenshot of the web interface plotting historiic  weather data including current temperature, humidity, pressure and more.](https://github.com/sdmeers/weatherstation/blob/main/screenshots/weatherstation-graphs.jpg)
 
+A link is provided in the top left to an interactive dashboard which enables the data to be analysed for any given time period. A basic summary is provided at the top of the screen and more detailed analysis is possible at the bottom including the ability to select a number of different data fields for more detailed analysis.
+
+![Screenshot of the interactive dashboard enabling detailed analysis temperature, humidity, pressure and more for a given date range.](https://github.com/sdmeers/weatherstation/blob/main/screenshots/dashboard_screenshot.jpg)
+
+In the top right a link is provided to view the raw data stored in the database.
+
 ## Installation
 
 The webserver is designed to run on a Raspberry Pi and has been developed using Python 3.11.3. This is a home project for fun, it works reliably but may need some modification to work on your system. There are probably many ways to improve it - grateful for any suggestions!
