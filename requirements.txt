@@ -5,3 +5,9 @@ numpy==1.24.3
 pandas==2.0.1
 matplotlib==3.7.1
 calplot>=0.1.7.5
+dash==2.17.0
+dash-bootstrap-components==1.6.0
+dash-core-components==2.0.0
+dash-html-components==2.0.0
+dash-table==5.0.0
+plotly==5.22.0
