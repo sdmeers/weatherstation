@@ -55,6 +55,7 @@ def get_data(*args):
         *args : variable length argument list.
             - Can be a single string that defines the time range:
                 - "latest": Returns the most recent record.
+                - "first": Returns the very first record.
                 - "today": Returns data for the current day.
                 - "last24h": Returns data for the last 24 hours.
                 - "yesterday": Returns data for the previous day.
@@ -78,11 +79,13 @@ def get_data(*args):
     Usage Examples:
         1. Get the latest data:
            data = get_data("latest")
-        2. Get data for January:
+        2. Get the very first record:
+           data = get_data("first")
+        3. Get data for January:
            data = get_data("month=1")
-        3. Get data for the 50th day of the year:
+        4. Get data for the 50th day of the year:
            data = get_data("day=50")
-        4. Get data from Jan 1, 2023 to Jan 31, 2023:
+        5. Get data from Jan 1, 2023 to Jan 31, 2023:
            data = get_data(datetime(2023, 1, 1), datetime(2023, 1, 31))
 
     Note:
@@ -97,7 +100,7 @@ def get_data(*args):
     now = datetime.now()
 
     def get_time_range(arg):
-        if arg == "latest":
+        if arg in ["latest", "first"]:
             return None, None
         elif arg == "today":
             return datetime(now.year, now.month, now.day), datetime(now.year, now.month, now.day) + timedelta(days=1) - timedelta(seconds=1)
@@ -109,7 +112,6 @@ def get_data(*args):
         elif arg == "last24h":
             end_date = now
             start_date = end_date - timedelta(days=1)
-            #start_date = end_date - timedelta(hours=23)
             return start_date, end_date
         elif arg == "yesterday":
             start_date = datetime(now.year, now.month, now.day) - timedelta(days=1)
@@ -159,9 +161,12 @@ def get_data(*args):
         arg = args[0]
         start_date, end_date = get_time_range(arg)
 
-        if arg in ["latest", "all"]:
-            query = "SELECT * FROM data ORDER BY Timestamp DESC LIMIT 1" if arg == "latest" else "SELECT * FROM data"
-
+        if arg == "latest":
+            query = "SELECT * FROM data ORDER BY Timestamp DESC LIMIT 1"
+        elif arg == "first":
+            query = "SELECT * FROM data WHERE id = 1"
+        elif arg == "all":
+            query = "SELECT * FROM data"
         else:
             query = f"SELECT * FROM data WHERE Timestamp BETWEEN '{start_date}' AND '{end_date}'"
     elif len(args) == 2 and all(isinstance(a, datetime) for a in args):
