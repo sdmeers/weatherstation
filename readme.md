@@ -7,11 +7,13 @@ As well as the most recently recorded data the webpages plot historic weather da
 
 ![Screenshot of the web interface plotting historiic  weather data including current temperature, humidity, pressure and more.](https://github.com/sdmeers/weatherstation/blob/main/screenshots/weatherstation-graphs.jpg)
 
-A link is provided in the top left to an interactive dashboard which enables the data to be analysed for any given time period. A basic summary is provided at the top of the screen and more detailed analysis is possible at the bottom including the ability to select a number of different data fields for more detailed analysis.
+A link is provided in the top left to an interactive dashboard (runs on port:5001) which enables the data to be analysed for any given time period. A basic summary is provided at the top of the screen and more detailed analysis is possible at the bottom including the ability to select a number of different data fields for more detailed analysis.
 
 ![Screenshot of the interactive dashboard enabling detailed analysis temperature, humidity, pressure and more for a given date range.](https://github.com/sdmeers/weatherstation/blob/main/screenshots/dashboard_screenshot.jpg)
 
-In the top right a link is provided to view the raw data stored in the database.
+In the top right a link is provided to view the data stored in the database. Each page contains a day of data, 96 readings i.e. every 15 minutes.
+
+![Screenshot of the page to view the data stored in the database.](https://github.com/sdmeers/weatherstation/blob/main/screenshots/raw_data.jpg)
 
 ## Installation
 
