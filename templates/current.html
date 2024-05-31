@@ -160,9 +160,12 @@
   <img src="/plot_annual_max_temperatures.png" alt="Max Temperatures Plot" class="plot-image">
 </div>
 
-<div class="w3-image" style="width:100%">
-  <h5 class="w3-container"><b>Rainy Days</b> (greater than 1.0mm rain happened on {{num_rainy_days}}/{{total_days}} days or {{rainy_percent}}%)</h5>
-  <img src="/plot_annual_rain_days.png" alt="Rainy Days Plot" class="plot-image">
+<div class="w3-image" style="width:100%; position: relative;">
+  <h5 class="w3-container"><b>Rainy Days</b></h5>
+  <div style="display: inline-block;">
+    <img src="/plot_annual_rain_days.png" alt="Rainy Days Plot" class="plot-image" style="display: block; max-width: 100%;">
+    <p style="text-align: right; font-style: italic; margin: 0; margin-bottom: 5px;">>1.0mm rain fell on {{num_rainy_days}}/{{total_days}} days or {{rainy_percent}}%</p>
+  </div>
 </div>
 
 <!--
