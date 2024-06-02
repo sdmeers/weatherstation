@@ -257,8 +257,8 @@ def get_unit(col):
     Output('controls-and-graph', 'figure'),
     Output('boxplot-graph', 'figure'),
     Output('statistics-table', 'data'),
-    Output('histogram-kde-graph', 'figure'),  # Add this line
-    Output('rolling-average-graph', 'figure'),  # Add this line
+    Output('histogram-kde-graph', 'figure'),
+    Output('rolling-average-graph', 'figure'),
     Input('button-today', 'n_clicks'),
     Input('button-week', 'n_clicks'),
     Input('button-month', 'n_clicks'),
@@ -321,15 +321,19 @@ def update_graphs_and_table(btn_today, btn_week, btn_month, btn_year, btn_all, s
     if date_range <= timedelta(days=2):  # Your updated condition
         period = filtered_df['datetime'].dt.floor('H')
         tickformat = '%H:%M'
+        rolling_window = 4  # Rolling average per hour
     elif date_range <= timedelta(days=14):
         period = filtered_df['datetime'].dt.floor('D')
         tickformat = '%d-%b'
+        rolling_window = 96  # Rolling average per day
     elif date_range <= timedelta(days=92):  # Approximately 3 months
         period = filtered_df['datetime'].dt.to_period('W').apply(lambda r: r.start_time)
         tickformat = 'w/c %d-%b'  # Custom tick format for weeks
+        rolling_window = 7 * 96  # Rolling average per week
     else:
         period = filtered_df['datetime'].dt.to_period('M').apply(lambda r: r.start_time)
         tickformat = '%b-%Y'
+        rolling_window = 30 * 96  # Rolling average per 30 days
 
     filtered_df['period'] = period
 
@@ -418,12 +422,19 @@ def update_graphs_and_table(btn_today, btn_week, btn_month, btn_year, btn_all, s
     filtered_df.reset_index(inplace=True)
 
     # Handle y-axis titles for time series and box plots
-    y_axis_title = f'{col_chosen.capitalize().replace("_", " ")} ({get_unit(col_chosen)})'
+    axis_title = f'{col_chosen.capitalize().replace("_", " ")}'
+    y_axis_title = f'{axis_title} ({get_unit(col_chosen)})'
     if col_chosen == 'rain_rate':
         y_axis_title = 'Rain Rate (mm/s)'
     elif col_chosen == 'wind_speed':
         y_axis_title = 'Wind Speed (mph)'
-
+    
+    # Get the appropriate axis titles based on the selected column
+    axis_title = f'{col_chosen.capitalize().replace("_", " ")}'
+    unit = get_unit(col_chosen)
+    xaxis_title = f'{axis_title} ({unit})'
+    yaxis_title = 'Density'
+    
     # Create the time series figure
     time_series_fig = px.scatter(
         filtered_df, 
@@ -437,9 +448,8 @@ def update_graphs_and_table(btn_today, btn_week, btn_month, btn_year, btn_all, s
         xaxis_title='', yaxis_title=y_axis_title,
         xaxis=dict(tickformat=tickformat)
     )
-
-    if col_chosen == 'luminance':
-        time_series_fig.update_yaxes(range=[0, 3000])
+    time_series_fig.add_trace(go.Scatter(x=filtered_df['datetime'], y=filtered_df[col_chosen].rolling(window=rolling_window).mean(), mode='lines', name='Rolling Average', line=dict(color='red', width=2)))
+    time_series_fig.update_layout(title=f'{axis_title} with Rolling Average', xaxis_title='Date', yaxis_title=xaxis_title, legend=dict(x=0.01, y=0.99))
 
     # Create the boxplot figure using Plotly Express
     boxplot_fig = px.box(
@@ -456,10 +466,6 @@ def update_graphs_and_table(btn_today, btn_week, btn_month, btn_year, btn_all, s
         xaxis=dict(tickformat=tickformat)
     )
 
-    if col_chosen == 'luminance':
-        boxplot_fig.update_yaxes(range=[0, 3000])
-
-    # Create the histogram with KDE for the selected data (dynamic based on dropdown selection)
     histogram_kde_fig = go.Figure()
 
     # Adjust data for conversion if necessary
@@ -475,7 +481,7 @@ def update_graphs_and_table(btn_today, btn_week, btn_month, btn_year, btn_all, s
         nbinsx=30,
         histnorm='probability density',
         marker=dict(
-            color='black',
+            color='blue',
             line=dict(
                 color='black',
                 width=1.5
@@ -502,12 +508,6 @@ def update_graphs_and_table(btn_today, btn_week, btn_month, btn_year, btn_all, s
         name='KDE'
     ))
 
-    # Get the appropriate axis titles based on the selected column
-    axis_title = f'{col_chosen.capitalize().replace("_", " ")}'
-    unit = get_unit(col_chosen)
-    xaxis_title = f'{axis_title} ({unit})'
-    yaxis_title = 'Density'
-
     histogram_kde_fig.update_layout(
         title=f'{axis_title} Distribution with KDE',
         xaxis_title=xaxis_title,
@@ -522,8 +522,9 @@ def update_graphs_and_table(btn_today, btn_week, btn_month, btn_year, btn_all, s
     # Create the 30-day rolling average plot for the selected data
     rolling_avg_fig = go.Figure()
     rolling_avg_fig.add_trace(go.Scatter(x=filtered_df['datetime'], y=kde_data, mode='lines', name=axis_title, line=dict(color='blue', width=1), opacity=0.5))
-    rolling_avg_fig.add_trace(go.Scatter(x=filtered_df['datetime'], y=kde_data.rolling(window=96*30).mean(), mode='lines', name='30-Day Rolling Average', line=dict(color='red', width=2)))
-    rolling_avg_fig.update_layout(title=f'{axis_title} with 30-Day Rolling Average', xaxis_title='Date', yaxis_title=xaxis_title, legend=dict(x=0.01, y=0.99))
+    rolling_avg_fig.add_trace(go.Scatter(x=filtered_df['datetime'], y=kde_data.rolling(window=rolling_window).mean(), mode='lines', name='Rolling Average', line=dict(color='red', width=2)))
+    rolling_avg_fig.update_layout(title=f'{axis_title} with Rolling Average', xaxis_title='Date', yaxis_title=xaxis_title, legend=dict(x=0.01, y=0.99))
+
 
     # Calculate statistics for the summary table
     statistics = filtered_df.groupby('period').agg(
