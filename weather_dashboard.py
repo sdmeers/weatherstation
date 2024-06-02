@@ -257,8 +257,8 @@ def get_unit(col):
     Output('controls-and-graph', 'figure'),
     Output('boxplot-graph', 'figure'),
     Output('statistics-table', 'data'),
-    Output('histogram-kde-graph', 'figure'),
-    Output('rolling-average-graph', 'figure'), 
+    Output('histogram-kde-graph', 'figure'),  # Add this line
+    Output('rolling-average-graph', 'figure'),  # Add this line
     Input('button-today', 'n_clicks'),
     Input('button-week', 'n_clicks'),
     Input('button-month', 'n_clicks'),
@@ -462,9 +462,16 @@ def update_graphs_and_table(btn_today, btn_week, btn_month, btn_year, btn_all, s
     # Create the histogram with KDE for the selected data (dynamic based on dropdown selection)
     histogram_kde_fig = go.Figure()
 
+    # Adjust data for conversion if necessary
+    kde_data = filtered_df[col_chosen].copy()
+    if col_chosen == 'rain_rate':
+        kde_data *= 3600  # Convert to mm/s
+    elif col_chosen == 'wind_speed':
+        kde_data *= 2.23694  # Convert to mph
+
     # Add histogram
     histogram_kde_fig.add_trace(go.Histogram(
-        x=filtered_df[col_chosen],
+        x=kde_data,
         nbinsx=30,
         histnorm='probability density',
         marker=dict(
@@ -479,8 +486,8 @@ def update_graphs_and_table(btn_today, btn_week, btn_month, btn_year, btn_all, s
     ))
 
     # Calculate KDE
-    x_grid = np.linspace(filtered_df[col_chosen].min(), filtered_df[col_chosen].max(), 1000)
-    kde = stats.gaussian_kde(filtered_df[col_chosen].dropna())
+    x_grid = np.linspace(kde_data.min(), kde_data.max(), 1000)
+    kde = stats.gaussian_kde(kde_data.dropna())
     kde_y = kde.evaluate(x_grid)
 
     # Add KDE line
@@ -508,10 +515,14 @@ def update_graphs_and_table(btn_today, btn_week, btn_month, btn_year, btn_all, s
         bargap=0.05
     )
 
+    # Make y-axis logarithmic if needed
+    if col_chosen in ['rain', 'rain_rate', 'wind_speed', 'luminance']:
+        histogram_kde_fig.update_yaxes(type="log")
+
     # Create the 30-day rolling average plot for the selected data
     rolling_avg_fig = go.Figure()
-    rolling_avg_fig.add_trace(go.Scatter(x=filtered_df['datetime'], y=filtered_df[col_chosen], mode='lines', name=axis_title, line=dict(color='blue', width=1), opacity=0.5))
-    rolling_avg_fig.add_trace(go.Scatter(x=filtered_df['datetime'], y=filtered_df[col_chosen].rolling(window=96*30).mean(), mode='lines', name='30-Day Rolling Average', line=dict(color='red', width=2)))
+    rolling_avg_fig.add_trace(go.Scatter(x=filtered_df['datetime'], y=kde_data, mode='lines', name=axis_title, line=dict(color='blue', width=1), opacity=0.5))
+    rolling_avg_fig.add_trace(go.Scatter(x=filtered_df['datetime'], y=kde_data.rolling(window=96*30).mean(), mode='lines', name='30-Day Rolling Average', line=dict(color='red', width=2)))
     rolling_avg_fig.update_layout(title=f'{axis_title} with 30-Day Rolling Average', xaxis_title='Date', yaxis_title=xaxis_title, legend=dict(x=0.01, y=0.99))
 
     # Calculate statistics for the summary table
