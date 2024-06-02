@@ -6,7 +6,10 @@ from weather_helper import get_data, convert_wind_direction
 from datetime import datetime, timedelta
 import pandas as pd
 import plotly.express as px
+import plotly.figure_factory as ff
 import plotly.graph_objects as go
+import numpy as np
+from scipy import stats
 import logging
 
 # Configure logging
@@ -199,6 +202,14 @@ app.layout = dbc.Container([
     ]),
     html.Hr(),
     dbc.Row([
+        dbc.Col(dcc.Graph(id='histogram-kde-graph', config={'displayModeBar': False, 'displaylogo': False}), width=12)  # Add this row
+    ]),
+    html.Hr(),
+    dbc.Row([
+        dbc.Col(dcc.Graph(id='rolling-average-graph', config={'displayModeBar': False, 'displaylogo': False}), width=12)  # Add this row
+    ]),
+    html.Hr(),
+    dbc.Row([
         dbc.Col(html.Div(
                 dash_table.DataTable(
                 id='statistics-table', 
@@ -246,6 +257,8 @@ def get_unit(col):
     Output('controls-and-graph', 'figure'),
     Output('boxplot-graph', 'figure'),
     Output('statistics-table', 'data'),
+    Output('histogram-kde-graph', 'figure'),
+    Output('rolling-average-graph', 'figure'), 
     Input('button-today', 'n_clicks'),
     Input('button-week', 'n_clicks'),
     Input('button-month', 'n_clicks'),
@@ -446,6 +459,61 @@ def update_graphs_and_table(btn_today, btn_week, btn_month, btn_year, btn_all, s
     if col_chosen == 'luminance':
         boxplot_fig.update_yaxes(range=[0, 3000])
 
+    # Create the histogram with KDE for the selected data (dynamic based on dropdown selection)
+    histogram_kde_fig = go.Figure()
+
+    # Add histogram
+    histogram_kde_fig.add_trace(go.Histogram(
+        x=filtered_df[col_chosen],
+        nbinsx=30,
+        histnorm='probability density',
+        marker=dict(
+            color='black',
+            line=dict(
+                color='black',
+                width=1.5
+            )
+        ),
+        opacity=0.75,
+        name='Histogram'
+    ))
+
+    # Calculate KDE
+    x_grid = np.linspace(filtered_df[col_chosen].min(), filtered_df[col_chosen].max(), 1000)
+    kde = stats.gaussian_kde(filtered_df[col_chosen].dropna())
+    kde_y = kde.evaluate(x_grid)
+
+    # Add KDE line
+    histogram_kde_fig.add_trace(go.Scatter(
+        x=x_grid,
+        y=kde_y,
+        mode='lines',
+        line=dict(
+            color='red',
+            width=2
+        ),
+        name='KDE'
+    ))
+
+    # Get the appropriate axis titles based on the selected column
+    axis_title = f'{col_chosen.capitalize().replace("_", " ")}'
+    unit = get_unit(col_chosen)
+    xaxis_title = f'{axis_title} ({unit})'
+    yaxis_title = 'Density'
+
+    histogram_kde_fig.update_layout(
+        title=f'{axis_title} Distribution with KDE',
+        xaxis_title=xaxis_title,
+        yaxis_title=yaxis_title,
+        bargap=0.05
+    )
+
+    # Create the 30-day rolling average plot for the selected data
+    rolling_avg_fig = go.Figure()
+    rolling_avg_fig.add_trace(go.Scatter(x=filtered_df['datetime'], y=filtered_df[col_chosen], mode='lines', name=axis_title, line=dict(color='blue', width=1), opacity=0.5))
+    rolling_avg_fig.add_trace(go.Scatter(x=filtered_df['datetime'], y=filtered_df[col_chosen].rolling(window=96*30).mean(), mode='lines', name='30-Day Rolling Average', line=dict(color='red', width=2)))
+    rolling_avg_fig.update_layout(title=f'{axis_title} with 30-Day Rolling Average', xaxis_title='Date', yaxis_title=xaxis_title, legend=dict(x=0.01, y=0.99))
+
     # Calculate statistics for the summary table
     statistics = filtered_df.groupby('period').agg(
         median_temperature=('temperature', 'median'),
@@ -481,7 +549,7 @@ def update_graphs_and_table(btn_today, btn_week, btn_month, btn_year, btn_all, s
         "avg_luminance": "Average Luminance (lux)"
     }).to_dict('records')
 
-    return start_date.date(), end_date, temp_bar_fig, total_rainfall_bar_fig, radar_fig, basic_statistics_data, time_series_fig, boxplot_fig, statistics_data
+    return start_date.date(), end_date, temp_bar_fig, total_rainfall_bar_fig, radar_fig, basic_statistics_data, time_series_fig, boxplot_fig, statistics_data, histogram_kde_fig, rolling_avg_fig
 
 # Run the app
 if __name__ == '__main__':
