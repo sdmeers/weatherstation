@@ -207,7 +207,7 @@ app.layout = dbc.Container([
     html.Hr(),
     dbc.Row([
         dbc.Col(html.Div(
-                dash_table.DataTable(
+            dash_table.DataTable(
                 id='statistics-table', 
                 columns=[
                     {"name": "Period", "id": "Period"},
@@ -225,12 +225,11 @@ app.layout = dbc.Container([
                     'textAlign': 'center'
                 },
                 style_table={'minWidth': '100%'}
-        ), style={'overflowX': 'auto'}
-    ), width=12)
-    html.Hr(),
+            ), style={'overflowX': 'auto'}
+        ), width=12)
+    ]),
     dbc.Row([
-        dbc.Col(html.Div(<p></p>))
-    ])
+        dbc.Col(html.Div(style={'height': '25px'}), width=12)
     ])
 ], fluid=True)
 
