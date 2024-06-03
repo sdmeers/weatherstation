@@ -435,21 +435,50 @@ def update_graphs_and_table(btn_today, btn_week, btn_month, btn_year, btn_all, s
     xaxis_title = f'{axis_title} ({unit})'
     yaxis_title = 'Density'
     
+    # # Create the time series figure
+    # time_series_fig = px.scatter(
+    #     filtered_df, 
+    #     x='datetime', 
+    #     y=filtered_df[col_chosen] * (3600 if col_chosen == 'rain_rate' else (2.23694 if col_chosen == 'wind_speed' else 1)),
+    #     title=f'Time Series of {col_chosen.capitalize().replace("_", " ")}',
+    #     template=None,  # Explicitly set the template to None
+    #     color_discrete_sequence=['black']
+    # ).update_layout(showlegend=True)
+    # time_series_fig.update_layout(
+    #     xaxis_title='', yaxis_title=y_axis_title,
+    #     xaxis=dict(tickformat=tickformat)
+    # )
+    # time_series_fig.add_trace(go.Scatter(x=filtered_df['datetime'], y=filtered_df[col_chosen].rolling(window=rolling_window).mean(), mode='lines', name='Rolling Average', line=dict(color='red', width=2)))
+    # time_series_fig.update_layout(title=f'{axis_title} with Rolling Average', xaxis_title='Date', yaxis_title=xaxis_title, legend=dict(x=0.01, y=0.99))
+
     # Create the time series figure
-    time_series_fig = px.scatter(
-        filtered_df, 
-        x='datetime', 
+    time_series_fig = go.Figure()
+
+    # Add scatter plot for time series
+    time_series_fig.add_trace(go.Scatter(
+        x=filtered_df['datetime'], 
         y=filtered_df[col_chosen] * (3600 if col_chosen == 'rain_rate' else (2.23694 if col_chosen == 'wind_speed' else 1)),
-        title=f'Time Series of {col_chosen.capitalize().replace("_", " ")}',
-        template=None,  # Explicitly set the template to None
-        color_discrete_sequence=['black']
-    ).update_layout(showlegend=True)
+        mode='markers',
+        name=axis_title,
+        line=dict(color='black')
+    ))
+
+    # Add rolling average plot for time series
+    time_series_fig.add_trace(go.Scatter(
+        x=filtered_df['datetime'],
+        y=filtered_df[col_chosen].rolling(window=rolling_window).mean() * (3600 if col_chosen == 'rain_rate' else (2.23694 if col_chosen == 'wind_speed' else 1)),
+        mode='lines',
+        name=f'Rolling Average',
+        line=dict(color='red', width=3)
+    ))
+
     time_series_fig.update_layout(
-        xaxis_title='', yaxis_title=y_axis_title,
-        xaxis=dict(tickformat=tickformat)
+        title=f'Time Series of {col_chosen.capitalize().replace("_", " ")}',
+        xaxis_title='',
+        yaxis_title=y_axis_title,
+        xaxis=dict(tickformat=tickformat),
+        showlegend=True
     )
-    time_series_fig.add_trace(go.Scatter(x=filtered_df['datetime'], y=filtered_df[col_chosen].rolling(window=rolling_window).mean(), mode='lines', name='Rolling Average', line=dict(color='red', width=2)))
-    time_series_fig.update_layout(title=f'{axis_title} with Rolling Average', xaxis_title='Date', yaxis_title=xaxis_title, legend=dict(x=0.01, y=0.99))
 
     # Create the boxplot figure using Plotly Express
     boxplot_fig = px.box(
