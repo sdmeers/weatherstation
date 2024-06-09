@@ -153,18 +153,31 @@ app.layout = dbc.Container([
     dbc.Row([
         dbc.Col(dcc.Graph(id='wind-direction-radar-chart', config={'displayModeBar': False, 'displaylogo': False}), xs=12, sm=12, md=6, lg=6, xl=6),
         dbc.Col(
-            dash_table.DataTable(
-                id='basic-statistics-table',
-                columns=[
-                    {"name": "Statistic", "id": "Statistic"},
-                    {"name": "Value", "id": "Value"}
-                ],
-                style_header={
-                    'whiteSpace': 'normal',
-                    'textAlign': 'center'
-                },
-                style_table={'margin-left': 'auto', 'margin-right': 'auto', 'width': '100%'}  # Center and set width
-            ), xs=12, sm=12, md=6, lg=6, xl=6
+            html.Div(
+                dash_table.DataTable(
+                    id='basic-statistics-table',
+                    columns=[
+                        {"name": "Key Statistics", "id": "Statistic"},
+                        {"name": "Value", "id": "Value"}
+                    ],
+                    style_header={
+                        'whiteSpace': 'normal',
+                        'textAlign': 'center'
+                    },
+                    style_table={
+                        'width': 'auto', 
+                        'margin': 'auto'
+                    },
+                    style_cell={
+                    'padding-left': '30px',
+                    'padding-right': '30px',
+                    'textAlign': 'center',
+                    },
+                ),
+                style={'display': 'flex', 'justify-content': 'center'}
+            ), 
+            xs=12, sm=12, md=6, lg=6, xl=6, 
+            style={'display': 'flex', 'justify-content': 'center'}
         )
     ]),
     html.Hr(),
