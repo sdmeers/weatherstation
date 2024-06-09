@@ -268,6 +268,9 @@ def update_graphs_and_table(btn_today, btn_week, btn_month, btn_year, btn_all, s
     # Determine which button was clicked
     ctx = dash.callback_context
     if not ctx.triggered:
+        # Default to show all data on initial load
+        #start_date = pd.to_datetime(get_data("all")['datetime'].min())
+        #end_date = pd.to_datetime(get_data("all")['datetime'].max())
         # Default to show today's data on initial load
         start_date = pd.to_datetime(get_data("today")['datetime'].min())
         end_date = pd.to_datetime(get_data("today")['datetime'].max())
