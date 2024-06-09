@@ -4,3 +4,5 @@ update_pi
 __pycache__/
 enviro/
 notebooks/
+.cache/
+.vscode/
