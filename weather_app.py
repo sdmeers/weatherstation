@@ -264,9 +264,11 @@ def plot_24h_bar_greyed(xs, ys, title, ylabel):
     axis.set_ylim(0, max(1, axis.get_ylim()[1]))
     axis.text(0, axis.get_ylim()[1] * 0.95, 'Yesterday', ha='left', va='top')
     axis.text(23, axis.get_ylim()[1] * 0.95, 'Today', ha='right', va='top')
+    fig.subplots_adjust(left=0.045, right=0.98, top=0.9, bottom=0.2) # Adjust the subplot parameters to reduce whitespace padding either side
     fig.set_facecolor('#ffffff')
     axis.set_facecolor('#ffffff')
     axis.set_title(title)
+
     return fig
 
 # these functions plot each graph. One is needed per graph
