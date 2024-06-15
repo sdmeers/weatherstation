@@ -578,4 +578,4 @@ def update_graphs_and_table(btn_today, btn_week, btn_month, btn_year, btn_all, s
 
 # Run the app
 if __name__ == '__main__':
-    app.run_server(debug=True, host='0.0.0.0', port=5001)
+    app.run_server(debug=True, host='0.0.0.0', port=5002)
