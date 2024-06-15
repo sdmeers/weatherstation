@@ -82,7 +82,7 @@ app.index_string = '''
 </head>
 <body>
     <div class="navbar-custom">
-        <a href="http://192.168.50.51:5000"><i class="fa fa-dashboard"></i> Weather Summary</a>
+        <a href="http://192.168.50.51:5001"><i class="fa fa-dashboard"></i> Weather Summary</a>
         <a href="http://192.168.50.51/index.php"><i class="fa-solid fa-database"></i> View data</a>
     </div>
     <div id="react-entry-point" style="padding-top: 50px;">
