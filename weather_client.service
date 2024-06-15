@@ -1,10 +1,10 @@
 [Unit]
-Description=Meersy Weather App Service
+Description=Meersy Weather App: Client Service
 After=network.target
 
 [Service]
 User=pi
-ExecStart=/usr/bin/python3 /home/pi/weather/weather_app.py
+ExecStart=/usr/bin/python3 /home/pi/weather/weather_client.py
 Restart=always
 RestartSec=30  # Restart service after 10 seconds if python service crashes
 StandardOutput=syslog  # Output to syslog
