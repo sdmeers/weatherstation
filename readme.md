@@ -82,18 +82,25 @@ EXIT;
 ### Step 4: Create the necessary config files 
 Add your MySQL `<username>` and `<password>` to the two config files using the templates above [sql_config-template.py](https://github.com/sdmeers/weatherstation/blob/main/sql_config-template.py) and [config-template.php](https://github.com/sdmeers/weatherstation/blob/main/config-template.php). Rename both files remove the `-template` suffix and add the `<IP_address>` of the web server to `sql_config.py`.
 
-### Step 5: Run weather_app.py as a background service in Linux
+### Step 5: Run the necessary services in the background on Linux
 
-* Edit [weather_app.service](https://github.com/sdmeers/weatherstation/blob/main/weather_app.service) with your path to `weather_app.py`. The line you will need to edit is as follows.
+There are three linked services to run the app as follows: 
+* Server: accepts the post requests from the enviro and writes them into the MySQL database.
+* Client: Flask app that serves the summary webpage.
+* Dashboard: Plotly-Dash app that runs the interactive dashboard.
+
+The 3 x .service files (<weather_client/server/dashboard.service>) will need to be modified. Follow this process once for each service.   
+
+* Edit [weather_client.service](https://github.com/sdmeers/weatherstation/blob/main/weather_client.service) with your path to `weather_client.py`. The line you will need to edit is as follows.
 
 ```
-ExecStart=/usr/bin/python3 <path_to_weather_app.py>
+ExecStart=/usr/bin/python3 <path_to_python_file.py>
 
 e.g.
-ExecStart=/usr/bin/python3 /home/pi/weatherstation/weather_app.py
+ExecStart=/usr/bin/python3 /home/pi/weatherstation/weather_client.py
 ```
 
-* Save this file to `/etc/systemd/system/weather_app.service`
+* Save this file to `/etc/systemd/system/weather_client.service`
 * Reload the systemd daemon to recognize your new service
 
 ```
@@ -103,13 +110,13 @@ sudo systemctl daemon-reload
 * Enable the service to start on boot
 
 ```
-sudo systemctl enable weather_app.service
+sudo systemctl enable weather_client.service
 ```
 
 * Start the service immediately without rebooting
 
 ```
-sudo systemctl start weather_app.service
+sudo systemctl start weather_client.service
 ```
 
 This will run the webserver as a background service on boot enabling it to accept data from the Enviro Weather. 
@@ -124,21 +131,21 @@ The webpages to display the weather data can be accessed via `localhost:5000` or
 Check the status of your service:
 
 ```
-sudo systemctl status weather_app.service
+sudo systemctl status weather_client.service
 ```
 
 Stop, restart & disable your service:
 
 ```
-sudo systemctl stop weather_app.service
-sudo systemctl restart weather_app.service
-sudo systemctl disable weather_app.service
+sudo systemctl stop weather_client.service
+sudo systemctl restart weather_client.service
+sudo systemctl disable weather_client.service
 ```
 
 View the most recent 50 log entries via syslog 
 
 ```
-journalctl -n 50 -u weather_app.service
+journalctl -n 50 -u weather_client.service
 ```
 MySQL command to exporting SQL Data to csv
 
@@ -155,7 +162,7 @@ LINES TERMINATED BY '\n';
 ```
 
 ## Other notes
-A script to convert the weather direction readings from the Enviro Weather (in degrees) to compass cardinal points (N, NE etc...) is included in the [weather_help.py](https://github.com/sdmeers/weatherstation/blob/main/weather_helper.py). Use a compass to determine how to modify the values in the helper file depending on how your weatherstation is oriented.
+A script to convert the weather direction readings from the Enviro Weather (in degrees) to compass cardinal points (N, NE etc...) is included in the [weather_helper.py](https://github.com/sdmeers/weatherstation/blob/main/weather_helper.py). Use a compass to determine how to modify the values in the helper file depending on how your weatherstation is oriented.
 
 A link is provided to `index.php` which displays the raw data from the MySQL database. Each page shows 96 records which corresponds to 24 hours of data sampled every 15 minutes.
 
