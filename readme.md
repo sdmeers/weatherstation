@@ -89,7 +89,7 @@ There are three linked services to run the app as follows:
 * Client: Flask app that serves the summary webpage.
 * Dashboard: Plotly-Dash app that runs the interactive dashboard.
 
-The 3 x .service files (<weather_client/server/dashboard.service>) will need to be modified. Follow this process once for each service.   
+The 3 x .service files (`<weather_client/server/dashboard.service>`) will need to be modified. Follow the process below, repeating for the `weather_server` and `weather_dashboard` services.   
 
 * Edit [weather_client.service](https://github.com/sdmeers/weatherstation/blob/main/weather_client.service) with your path to `weather_client.py`. The line you will need to edit is as follows.
 
