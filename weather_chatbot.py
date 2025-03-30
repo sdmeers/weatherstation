@@ -52,15 +52,7 @@ def generate_python_query(llm, question):
     - get_data("today") - gets data for the current day
     - get_data("last24h") - gets data for the last 24 hours
     - get_data("yesterday") - gets data for the previous day
-    - get_data("day=n") - gets data for the nth day of the current year (n: 1-366)
-    - get_data("week") - gets data for the current week
-    - get_data("week=n") - gets data for the nth week of the year (n: 1-53)
     - get_data("last7days") - gets data for the last 7 days
-    - get_data("month") - gets data for the current month
-    - get_data("month=n") - gets data for the nth month (n: 1-12)
-    - get_data("year") - gets data for the entire current year
-    - get_data("year=n") - gets data for the specified year
-    - get_data("all") - gets all data in the database
     - get_data(datetime1, datetime2) - gets data between two datetime objects
     
     Given this information, generate Python code to answer the following question:
@@ -69,6 +61,10 @@ def generate_python_query(llm, question):
     
     IMPORTANT GUIDELINES:
     - Use ONLY the get_data() function to retrieve data - DO NOT write SQL queries
+    - get_data and datetime have already been defined and are available for use, do NOT try to redefine them
+    - there are 30 days in September, April, June, and November
+    - there are 31 days in January, March, May, July, August, October, and December
+    - February has 28 days, and 29 days in leap years
     - After retrieving the data, use pandas functions to analyze it
     - Always store your final answer in a variable named 'result'
     - Always round numerical results to one decimal place
@@ -99,24 +95,74 @@ def generate_python_query(llm, question):
        result = total_rain  # Just the numerical value
        ```
     
-    3. For comparing time periods:
+    3. For questions about the weather over specific periods of time:
        ```
-       # Which month was warmer on average, January or February?
-       jan_data = get_data('month=1')
-       feb_data = get_data('month=2')
+       # What was the average temperature in January?
+        jan_start = datetime.datetime(2025, 1, 1)
+        jan_end = datetime.datetime(2025, 2, 1)
        
-       avg_temp_jan = round(jan_data['temperature'].mean(), 1)
-       avg_temp_feb = round(feb_data['temperature'].mean(), 1)
-       
-       if avg_temp_jan > avg_temp_feb:
-           warmer_month = "January"
-       else:
-           warmer_month = "February"
-           
-       result = {{"warmer_month": warmer_month, "january_temp": avg_temp_jan, "february_temp": avg_temp_feb}}
+        data = get_data(jan_start, jan_end)
+        avg_temp = round(data['temperature'].mean(), 1)
        ```
     
-    Return ONLY the Python code that will produce the result. No explanations, no markdown.
+    4. For specific month and year combinations (example only, change month and year as needed): 
+       ``` 
+        Which month was warmer, January 2025 or February 2025?
+        
+        Create datetime objects for the month ranges
+            jan_start = datetime.datetime(2025, 1, 1)
+            jan_end = datetime.datetime(2025, 2, 1)
+            feb_start = datetime.datetime(2025, 2, 1)
+            feb_end = datetime.datetime(2025, 3, 1)
+
+        Get data for specific date ranges
+            jan_data = get_data(jan_start, jan_end)
+            feb_data = get_data(feb_start, feb_end)
+            avg_temp_jan = round(jan_data['temperature'].mean(), 1)
+            avg_temp_feb = round(feb_data['temperature'].mean(), 1)
+
+        if avg_temp_jan > avg_temp_feb:
+            warmer_month = "January"
+        else:
+            warmer_month = "February"
+
+        result = {{"warmer_month": warmer_month, "january_temp": avg_temp_jan, "february_temp": avg_temp_feb}}
+        ```
+    
+    5. For specific month and year combinations (example only, change month and year as needed): 
+       ``` 
+        Which month was colder, September 2025 or October 2025?
+        
+        Create datetime objects for the month ranges
+            sept_start = datetime.datetime(2025, 9, 1)
+            sept_end = datetime.datetime(2025, 10, 1)
+            oct_start = datetime.datetime(2025, 10, 1)
+            oct_end = datetime.datetime(2025, 11, 1)
+
+        Get data for specific date ranges
+            sept_data = get_data(sept_start, sept_end)
+            oct_data = get_data(oct_start, oct_end)
+            avg_temp_sept = round(sept_data['temperature'].mean(), 1)
+            avg_temp_oct = round(oct_data['temperature'].mean(), 1)
+
+        if avg_temp_sept > avg_temp_oct:
+            colder_month = "October"
+        else:
+            colder_month = "September"
+
+        result = {{"colder_month": colder_month, "sept_temp": avg_temp_sept, "oct_temp": avg_temp_oct}}
+        ```
+    
+    6. For questions about today's weather:
+
+        What was the warmest temperature today?
+
+        data = get_data("today")
+        max_temp = round(data['temperature'].max(), 1)
+        result = max_temp  # Just the numerical value
+
+    IMPORTANT: ONLY provide valid Python code. DO NOT include any explanations, apologies, markdown code blocks, or natural language. Your response MUST start immediately with Python code that assigns the final result to the variable 'result'.
+
     """
     
     try:
@@ -227,8 +273,13 @@ def main():
             st.markdown(prompt)
         
         with st.chat_message("assistant"):
-            with st.spinner("Generating Python code..."):
+            with st.spinner("Generating query..."):
                 python_code = generate_python_query(llm, prompt)
+                if python_code:
+                    with st.expander("Debug - Generated Code"):
+                        st.code(python_code, language="python")
+                else:
+                    st.error("Failed to generate Python code")
                 
             if python_code:
                 with st.spinner("Executing data analysis..."):
