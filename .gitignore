@@ -6,3 +6,4 @@ enviro/
 notebooks/
 .cache/
 .vscode/
+scrap_weather_notebook.ipynb
